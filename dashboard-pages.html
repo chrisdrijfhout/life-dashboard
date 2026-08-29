@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chris's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap">
+
+<style>
+/* ── Tokens ─────────────────────────────────────────────────── */
+:root {
+  --bg:       #0C1210;
+  --s1:       #131A16;
+  --s2:       #1A2420;
+  --s3:       #22302A;
+  --accent:   #5AAF80;
+  --accent-d: #0F2318;
+  --warm:     #E07A5F;
+  --warm-d:   #271408;
+  --blue:     #6B9FE4;
+  --blue-d:   #0E1B2E;
+  --gold:     #C9A84C;
+  --gold-d:   #211A06;
+  --t1:       #DDE8E2;
+  --t2:       #7A9B8A;
+  --t3:       #3E5A4A;
+  --border:   #1F3028;
+  --radius:   14px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F2F5F3; --s1: #FFFFFF; --s2: #EAF0EC; --s3: #DEE8E2;
+    --accent: #2E7A52; --accent-d: #E0F0E8;
+    --warm: #C4613A; --warm-d: #FAE8E2;
+    --blue: #3A6FC0; --blue-d: #E2ECF8;
+    --gold: #A07A1A; --gold-d: #F5EDD0;
+    --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F2F5F3; --s1: #FFFFFF; --s2: #EAF0EC; --s3: #DEE8E2;
+  --accent: #2E7A52; --accent-d: #E0F0E8;
+  --warm: #C4613A; --warm-d: #FAE8E2;
+  --blue: #3A6FC0; --blue-d: #E2ECF8;
+  --gold: #A07A1A; --gold-d: #F5EDD0;
+  --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg); color: var(--t1);
+  min-height: 100vh; font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.greeting-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px; font-weight: 600; color: var(--t1); line-height: 1.1;
+}
+.greeting-sub { font-size: 13px; color: var(--t2); margin-top: 2px; }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+
+.btn-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--s1);
+  color: var(--t2); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.btn-icon:hover { background: var(--s2); color: var(--t1); }
+
+.btn-save {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: opacity .15s; white-space: nowrap;
+}
+.btn-save:hover { opacity: .85; }
+.btn-save:disabled { opacity: .5; cursor: default; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 14px;
+  padding: 14px 20px 80px;
+}
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+.col-left  { display: flex; flex-direction: column; gap: 14px; }
+.col-right { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 0; margin-bottom: 12px;
+}
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--t3);
+}
+.card-action {
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; line-height: 1; color: var(--t2);
+  transition: color .15s; padding: 0;
+}
+.card-action:hover { color: var(--accent); }
+.card-body { padding: 0 16px 16px; }
+
+/* ── Weather ─────────────────────────────────────────────────── */
+.wx-main {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.wx-temp {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px; font-weight: 700; color: var(--t1); line-height: 1;
+}
+.wx-unit { font-size: 20px; color: var(--t2); font-weight: 400; }
+.wx-icon { font-size: 40px; line-height: 1; }
+.wx-desc { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
+.wx-city { font-weight: 500; color: var(--t1); }
+.wx-forecast {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px;
+}
+.wx-day {
+  background: var(--s2); border-radius: 8px; padding: 8px 6px; text-align: center;
+}
+.wx-day-name { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--t3); margin-bottom: 4px; }
+.wx-day-icon { font-size: 20px; margin-bottom: 4px; }
+.wx-day-temps { font-size: 12px; color: var(--t2); }
+.wx-day-temps strong { color: var(--t1); font-weight: 500; }
+.wx-loading { padding: 28px 0; text-align: center; font-size: 13px; color: var(--t2); }
+.wx-error   { padding: 16px 0; text-align: center; font-size: 13px; color: var(--warm); }
+.wx-city-form { display: flex; gap: 8px; margin-top: 12px; }
+.wx-city-input {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
+}
+.wx-city-input:focus { outline: none; border-color: var(--accent); }
+.wx-city-btn {
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;
+}
+.wx-city-btn:hover { opacity: .85; }
+
+/* ── Net Worth ─────────────────────────────────────────────────── */
+.nw-total {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 30px; font-weight: 700; color: var(--gold); line-height: 1;
+  margin-bottom: 4px;
+}
+.nw-label { font-size: 12px; color: var(--t2); margin-bottom: 14px; }
+.nw-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;
+}
+.nw-tile { background: var(--s2); border-radius: 9px; padding: 10px 11px; }
+.nw-tile-label { font-size: 10.5px; color: var(--t3); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+.nw-tile-val {
+  font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.nw-tile-val.positive { color: var(--accent); }
+.nw-tile-val.negative { color: var(--warm); }
+.nw-tile-val.gold     { color: var(--gold); }
+.nw-tile-val.blue     { color: var(--blue); }
+.nw-note { font-size: 11px; color: var(--t3); margin-top: 4px; }
+
+/* ── Finance ─────────────────────────────────────────────────── */
+.fin-net {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1;
+}
+.fin-net.negative { color: var(--warm); }
+.fin-net-label { font-size: 12px; color: var(--t2); margin-bottom: 14px; }
+.fin-bar-wrap { height: 6px; background: var(--s3); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+.fin-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s ease; min-width: 4px; }
+.fin-bar.over { background: var(--warm); }
+.fin-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.fin-row:last-child { border-bottom: none; }
+.fin-row-label { color: var(--t2); }
+.fin-row-val { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+.fin-row-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--t3); font-size: 13px; padding: 0 0 0 8px; transition: color .15s;
+}
+.fin-row-del:hover { color: var(--warm); }
+.fin-add { display: flex; gap: 6px; margin-top: 10px; }
+.fin-add input {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 7px 9px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
+}
+.fin-add input:focus { outline: none; border-color: var(--accent); }
+.fin-add input.fin-name { flex: 1; }
+.fin-add input.fin-amt  { width: 72px; }
+.fin-add-btn {
+  padding: 7px 10px; border-radius: 7px;
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--t1); font-size: 14px; cursor: pointer; transition: background .15s;
+}
+.fin-add-btn:hover { background: var(--s3); }
+.fin-income-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.fin-income-label { font-size: 12px; color: var(--t2); white-space: nowrap; }
+.fin-income-input {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 6px 10px;
+  font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: var(--t1);
+}
+.fin-income-input:focus { outline: none; border-color: var(--accent); }
+
+/* ── Calendar ─────────────────────────────────────────────────── */
+.cal-embed {
+  width: 100%; border: none; border-radius: 9px;
+  min-height: 320px; background: var(--s2);
+}
+.cal-setup {
+  padding: 20px 0; display: flex; flex-direction: column;
+  align-items: center; text-align: center; gap: 10px;
+}
+.cal-setup-icon { font-size: 32px; }
+.cal-setup-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--t1); }
+.cal-setup-desc { font-size: 12px; color: var(--t2); line-height: 1.6; max-width: 300px; }
+.cal-url-form { display: flex; gap: 6px; width: 100%; }
+.cal-url-input {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 11px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
+}
+.cal-url-input:focus { outline: none; border-color: var(--accent); }
+.cal-url-btn {
+  padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff;
+  border: none; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif;
+}
+.cal-url-btn:hover { opacity: .85; }
+.cal-help-link { font-size: 11px; color: var(--blue); text-decoration: none; }
+.cal-help-link:hover { text-decoration: underline; }
+.cal-change-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; color: var(--t3); padding: 0; transition: color .15s;
+}
+.cal-change-btn:hover { color: var(--warm); }
+
+/* ── Events ─────────────────────────────────────────────────── */
+.ev-day-group { margin-bottom: 14px; }
+.ev-day-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--t3); margin-bottom: 6px;
+}
+.ev-day-label.today { color: var(--accent); }
+.ev-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; margin-bottom: 4px;
+  background: var(--s2); transition: background .1s;
+}
+.ev-item:hover { background: var(--s3); }
+.ev-item-emoji { font-size: 17px; flex-shrink: 0; }
+.ev-item-body { flex: 1; min-width: 0; }
+.ev-item-title { font-size: 13.5px; font-weight: 500; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-item-meta  { font-size: 11px; color: var(--t2); display: flex; align-items: center; gap: 8px; }
+.ev-item-maplink {
+  font-size: 10.5px; color: var(--blue); text-decoration: none; white-space: nowrap;
+  opacity: 0; transition: opacity .1s;
+}
+.ev-item:hover .ev-item-maplink { opacity: 1; }
+.ev-item-maplink:hover { text-decoration: underline; }
+.ev-item-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--t3); font-size: 13px; padding: 0; flex-shrink: 0;
+  opacity: 0; transition: opacity .1s, color .1s;
+}
+.ev-item:hover .ev-item-del { opacity: 1; }
+.ev-item-del:hover { color: var(--warm); }
+.ev-empty { font-size: 13px; color: var(--t3); padding: 8px 0; }
+.ev-add-form {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px;
+}
+.ev-input {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 7px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
+}
+.ev-input:focus { outline: none; border-color: var(--accent); }
+.ev-input.ev-title    { flex: 1; min-width: 130px; }
+.ev-input.ev-location { flex: 1; min-width: 120px; }
+.ev-input.ev-date     { width: 136px; }
+.ev-input.ev-time     { width: 96px; }
+.ev-add-btn {
+  padding: 7px 14px; border-radius: 7px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: opacity .15s;
+}
+.ev-add-btn:hover { opacity: .85; }
+
+/* ── Feed ─────────────────────────────────────────────────── */
+.feed-item {
+  display: flex; flex-direction: column;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.feed-item:first-child { padding-top: 0; }
+.feed-item:last-child  { border-bottom: none; padding-bottom: 0; }
+.feed-title {
+  font-size: 13.5px; font-weight: 500; color: var(--t1);
+  line-height: 1.4; margin-bottom: 4px; text-decoration: none;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.feed-title:hover { color: var(--accent); }
+.feed-meta { font-size: 11px; color: var(--t2); display: flex; gap: 10px; }
+.feed-loading { padding: 12px 0; font-size: 13px; color: var(--t2); }
+.feed-error   { padding: 12px 0; font-size: 13px; color: var(--warm); }
+.feed-src {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  padding: 7px 10px; border-radius: 8px; background: var(--s2);
+  font-size: 12px; color: var(--t2);
+}
+.feed-src-input {
+  flex: 1; background: transparent; border: none;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1); padding: 0;
+}
+.feed-src-input:focus { outline: none; }
+.feed-go-btn {
+  padding: 4px 10px; border-radius: 6px;
+  background: var(--s3); border: 1px solid var(--border);
+  color: var(--t1); font-size: 12px; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: background .15s;
+}
+.feed-go-btn:hover { background: var(--border); }
+
+/* ── Settings modal ─────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+}
+.modal-backdrop.open { opacity: 1; }
+.modal {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--radius); width: 100%; max-width: 400px;
+  padding: 24px; transform: scale(.97);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-backdrop.open .modal { transform: scale(1); }
+.modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.settings-field { margin-bottom: 14px; }
+.settings-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--t2); margin-bottom: 6px;
+}
+.settings-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 12px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--t1);
+  -webkit-appearance: none;
+}
+.settings-input:focus { outline: none; border-color: var(--accent); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.btn { padding: 9px 18px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+.btn-primary   { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--s2); color: var(--t1); border: 1px solid var(--border); }
+.btn:hover { opacity: .85; }
+
+/* ── Misc ─────────────────────────────────────────────────── */
+.save-status { font-size: 11px; color: var(--t3); font-style: italic; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; animation: spin .7s linear infinite; }
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
+}
+.chip-green { background: var(--accent-d); color: var(--accent); }
+.chip-warm  { background: var(--warm-d);   color: var(--warm); }
+.emoji-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.emoji-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  border: 2px solid transparent; background: var(--s2);
+  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.emoji-btn.sel { border-color: var(--accent); background: var(--accent-d); }
+.data-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--t3); letter-spacing: .03em;
+}
+.data-badge::before { content: '●'; font-size: 7px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ── -->
+<div class="topbar">
+  <div>
+    <div class="greeting-name" id="greeting-name">Good morning, Chris</div>
+    <div class="greeting-sub"  id="greeting-sub"></div>
+  </div>
+  <div class="topbar-right">
+    <span class="save-status" id="save-status"></span>
+    <button class="btn-icon" id="btn-settings" title="Settings">⚙</button>
+    <button class="btn-save" id="btn-save">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save
+    </button>
+  </div>
+</div>
+
+<!-- ── Grid ── -->
+<div class="grid">
+
+  <!-- Left column -->
+  <div class="col-left">
+
+    <!-- Weather -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="wx-card-title">Weather</span>
+        <button class="card-action" id="btn-refresh-wx" title="Refresh">↻</button>
+      </div>
+      <div id="wx-body" class="card-body">
+        <div class="wx-loading">Loading weather…</div>
+      </div>
+    </div>
+
+    <!-- Net Worth -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Net Worth</span>
+        <span class="data-badge">May 2026</span>
+      </div>
+      <div class="card-body">
+        <div class="nw-total" id="nw-total">€0</div>
+        <div class="nw-label">Total net worth snapshot</div>
+        <div class="nw-grid">
+          <div class="nw-tile">
+            <div class="nw-tile-label">Home Equity</div>
+            <div class="nw-tile-val positive" id="nw-equity">€0</div>
+          </div>
+          <div class="nw-tile">
+            <div class="nw-tile-label">IBKR Portfolio</div>
+            <div class="nw-tile-val blue" id="nw-ibkr">€0</div>
+          </div>
+          <div class="nw-tile">
+            <div class="nw-tile-label">Cash</div>
+            <div class="nw-tile-val positive" id="nw-cash">€0</div>
+          </div>
+          <div class="nw-tile">
+            <div class="nw-tile-label">Mortgage</div>
+            <div class="nw-tile-val negative" id="nw-mortgage">-€0</div>
+          </div>
+        </div>
+        <div class="nw-note" id="nw-note"></div>
+      </div>
+    </div>
+
+    <!-- Monthly Budget -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Monthly Budget</span>
+        <span class="data-badge">May 2026</span>
+      </div>
+      <div class="card-body">
+        <div class="fin-income-row">
+          <span class="fin-income-label">Income</span>
+          <input class="fin-income-input" id="fin-income" type="number" min="0" placeholder="0">
+          <span style="font-size:13px;color:var(--t2)" id="fin-currency-label">€</span>
+        </div>
+        <div class="fin-net" id="fin-net">€0</div>
+        <div class="fin-net-label" id="fin-net-label">left after expenses</div>
+        <div class="fin-bar-wrap"><div class="fin-bar" id="fin-bar" style="width:0%"></div></div>
+        <div id="fin-expense-list"></div>
+        <div class="fin-add">
+          <input class="fin-name" placeholder="Expense name" id="fin-exp-name" type="text">
+          <input class="fin-amt"  placeholder="0" id="fin-exp-amt" type="number" min="0">
+          <button class="fin-add-btn" id="fin-add-btn">+</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right column -->
+  <div class="col-right">
+
+    <!-- Google Calendar -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Google Calendar</span>
+        <button class="card-action cal-change-btn" id="btn-cal-change" title="Change embed URL" style="font-size:12px;display:none">Change URL</button>
+      </div>
+      <div class="card-body" id="cal-body"></div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Upcoming</span>
+        <span class="chip chip-green" id="ev-count">0 events</span>
+      </div>
+      <div class="card-body">
+        <div id="ev-list"></div>
+        <div class="ev-add-form">
+          <div class="emoji-row" id="ev-emoji-row"></div>
+          <input class="ev-input ev-title"    id="ev-new-title"    placeholder="Event name" type="text">
+          <input class="ev-input ev-location" id="ev-new-location" placeholder="📍 Location (optional)" type="text">
+          <input class="ev-input ev-date"     id="ev-new-date"     type="date">
+          <input class="ev-input ev-time"     id="ev-new-time"     type="time">
+          <button class="ev-add-btn" id="ev-add-btn">Add event</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reddit Feed -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Feed</span>
+        <button class="card-action" id="btn-refresh-feed" title="Refresh">↻</button>
+      </div>
+      <div class="card-body">
+        <div class="feed-src">
+          <span>r/</span>
+          <input class="feed-src-input" id="feed-src-input" placeholder="subreddit" value="worldnews">
+          <button class="feed-go-btn" id="btn-feed-go">Go</button>
+        </div>
+        <div id="feed-body"><div class="feed-loading">Loading…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Settings modal ── -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-title">Settings</div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-name">Your name</label>
+      <input class="settings-input" id="s-name" placeholder="Chris">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-city">City (weather)</label>
+      <input class="settings-input" id="s-city" placeholder="Amsterdam">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-currency">Currency symbol</label>
+      <input class="settings-input" id="s-currency" placeholder="€" style="width:80px">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-apartment">Apartment value (€)</label>
+      <input class="settings-input" id="s-apartment" type="number" placeholder="551000">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-mortgage">Mortgage balance (€)</label>
+      <input class="settings-input" id="s-mortgage" type="number" placeholder="214035">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-ibkr">IBKR portfolio (€)</label>
+      <input class="settings-input" id="s-ibkr" type="number" placeholder="18500">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-cash">Cash (€)</label>
+      <input class="settings-input" id="s-cash" type="number" placeholder="7480">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="s-cancel">Cancel</button>
+      <button class="btn btn-primary"   id="s-save">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Default state ───────────────────────────────────────────────
+const DEFAULTS = {
+  name:        'Chris',
+  city:        'Amsterdam',
+  subreddit:   'worldnews',
+  currency:    '€',
+  calendarUrl: '',
+  events:      [],
+  finance: {
+    income: 4779.22,
+    expenses: [
+      {id:'h1', name:'Housing',          amount:1509.45},
+      {id:'h2', name:'Groceries',        amount:307.29},
+      {id:'h3', name:'Health Insurance', amount:177.40},
+      {id:'h4', name:'Dining & Going Out',amount:297.65},
+      {id:'h5', name:'Coffee & Cafés',   amount:41.57},
+      {id:'h6', name:'Shopping',         amount:168.06},
+      {id:'h7', name:'Subscriptions',    amount:178.03},
+      {id:'h8', name:'Gym',              amount:55.00},
+      {id:'h9', name:'Telecom',          amount:79.90},
+      {id:'h10',name:'Transport',        amount:12.00},
+      {id:'h11',name:'Insurance',        amount:30.97},
+      {id:'h12',name:'Other',            amount:10.20},
+    ]
+  },
+  netWorth: {
+    apartment: 551000,
+    mortgage:  214035,
+    ibkr:      18500,
+    cash:      7479.57,
+  },
+};
+
+// ── Load / persist state via localStorage ──────────────────────
+// State lives in localStorage so it survives page refreshes.
+// The defaults above are only used on first visit.
+function loadState() {
+  try {
+    const saved = localStorage.getItem('dash-state');
+    if (saved) return { ...DEFAULTS, ...JSON.parse(saved) };
+  } catch {}
+  return { ...DEFAULTS };
+}
+
+function saveState() {
+  try { localStorage.setItem('dash-state', JSON.stringify(state)); } catch {}
+}
+
+const state = loadState();
+
+// ── Helpers ────────────────────────────────────────────────────
+const uid = () => Math.random().toString(36).slice(2, 9);
+const esc = s => !s ? '' : String(s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const EV_EMOJIS = ['📅','🎉','🍽️','🎬','✈️','🏖️','☕','🎵','🏋️','❤️','🎂','🛍️','🏛️','🌷'];
+let evPickedEmoji = '📅';
+
+// ── Clock ──────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h   = now.getHours();
+  const tod = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  document.getElementById('greeting-name').textContent = `Good ${tod}, ${state.name}`;
+  document.getElementById('greeting-sub').textContent  =
+    `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()} · ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+  document.title = `${state.name}'s Dashboard`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ── Weather ────────────────────────────────────────────────────
+const WMO = {
+  0:'☀️ Clear',1:'🌤️ Mainly clear',2:'⛅ Partly cloudy',3:'☁️ Overcast',
+  45:'🌫️ Fog',48:'🌫️ Icy fog',
+  51:'🌦️ Light drizzle',53:'🌦️ Drizzle',55:'🌧️ Heavy drizzle',
+  61:'🌧️ Light rain',63:'🌧️ Rain',65:'🌧️ Heavy rain',
+  71:'🌨️ Light snow',73:'❄️ Snow',75:'❄️ Heavy snow',77:'🌨️ Snow grains',
+  80:'🌦️ Showers',81:'🌧️ Rain showers',82:'🌧️ Heavy showers',
+  85:'🌨️ Snow showers',86:'❄️ Heavy snow showers',
+  95:'⛈️ Thunderstorm',96:'⛈️ Thunderstorm + hail',99:'⛈️ Thunderstorm + hail',
+};
+const wmoIcon = c => (WMO[c]||'🌡️ Unknown').split(' ')[0];
+const wmoDesc = c => (WMO[c]||'Unknown').split(' ').slice(1).join(' ');
+const fmtDay  = s => { const [y,m,d]=s.split('-').map(Number); return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(y,m-1,d).getDay()]; };
+
+async function fetchWeather(lat, lon, cityName) {
+  const res  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=4&wind_speed_unit=kmh`);
+  const data = await res.json();
+  const cur  = data.current;
+  const d    = data.daily;
+  document.getElementById('wx-card-title').textContent = cityName + ' Weather';
+  document.getElementById('wx-body').innerHTML = `
+    <div class="wx-main">
+      <div>
+        <div class="wx-temp">${Math.round(cur.temperature_2m)}<span class="wx-unit">°C</span></div>
+        <div class="wx-desc">${wmoDesc(cur.weathercode)} · ${Math.round(cur.windspeed_10m)} km/h</div>
+        <div class="wx-desc"><span class="wx-city">${esc(cityName)}</span></div>
+      </div>
+      <div class="wx-icon">${wmoIcon(cur.weathercode)}</div>
+    </div>
+    <div class="wx-forecast">
+      ${[1,2,3].map(i=>`<div class="wx-day">
+        <div class="wx-day-name">${fmtDay(d.time[i])}</div>
+        <div class="wx-day-icon">${wmoIcon(d.weathercode[i])}</div>
+        <div class="wx-day-temps"><strong>${Math.round(d.temperature_2m_max[i])}°</strong> / ${Math.round(d.temperature_2m_min[i])}°</div>
+      </div>`).join('')}
+    </div>
+    <div class="wx-city-form">
+      <input class="wx-city-input" id="wx-city-inp" placeholder="Change city…">
+      <button class="wx-city-btn" id="wx-city-btn">Go</button>
+    </div>`;
+  bindCityBtn();
+}
+
+function showWxError(msg) {
+  document.getElementById('wx-body').innerHTML = `
+    <div class="wx-error">${esc(msg)}</div>
+    <div class="wx-city-form" style="margin-top:0">
+      <input class="wx-city-input" id="wx-city-inp" placeholder="Enter city…">
+      <button class="wx-city-btn" id="wx-city-btn">Go</button>
+    </div>`;
+  bindCityBtn();
+}
+
+function bindCityBtn() {
+  const btn = document.getElementById('wx-city-btn');
+  if (!btn) return;
+  const go = async () => {
+    const v = document.getElementById('wx-city-inp')?.value.trim();
+    if (!v) return;
+    state.city = v;
+    document.getElementById('wx-body').innerHTML = '<div class="wx-loading">Looking up…</div>';
+    try {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=1&language=en&format=json`);
+      const j = await r.json();
+      if (!j.results?.length) throw new Error('City not found');
+      const {latitude:lat, longitude:lon, name, country} = j.results[0];
+      await fetchWeather(lat, lon, name + (country?', '+country:''));
+    } catch { showWxError(`"${v}" not found — try another city name.`); }
+  };
+  btn.addEventListener('click', go);
+  document.getElementById('wx-city-inp')?.addEventListener('keydown', e => { if(e.key==='Enter') go(); });
+}
+
+async function loadWeather() {
+  const el = document.getElementById('wx-body');
+  el.innerHTML = '<div class="wx-loading">Loading weather…</div>';
+  if (state.city) {
+    try {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(state.city)}&count=1&language=en&format=json`);
+      const j = await r.json();
+      if (!j.results?.length) throw new Error();
+      const {latitude:lat,longitude:lon,name,country} = j.results[0];
+      await fetchWeather(lat, lon, name+(country?', '+country:''));
+      return;
+    } catch { showWxError(`Could not load weather for "${state.city}".`); return; }
+  }
+  if (!navigator.geolocation) { showWxError('Enter a city to see weather.'); return; }
+  navigator.geolocation.getCurrentPosition(
+    async p => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${p.coords.latitude}&lon=${p.coords.longitude}&format=json`);
+        const j = await r.json();
+        const city = j.address?.city || j.address?.town || 'Your location';
+        await fetchWeather(p.coords.latitude, p.coords.longitude, city);
+      } catch { await fetchWeather(p.coords.latitude, p.coords.longitude, 'Your location'); }
+    },
+    () => showWxError('Location denied — enter a city above.'),
+    { timeout: 8000 }
+  );
+}
+
+// ── Net Worth ──────────────────────────────────────────────────
+function renderNetWorth() {
+  const nw = state.netWorth;
+  const equity = nw.apartment - nw.mortgage;
+  const total  = equity + nw.ibkr + nw.cash;
+  const fmt = n => `€${Number(n).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:0})}`;
+
+  document.getElementById('nw-total').textContent    = fmt(total);
+  document.getElementById('nw-equity').textContent   = fmt(equity);
+  document.getElementById('nw-ibkr').textContent     = fmt(nw.ibkr);
+  document.getElementById('nw-cash').textContent     = fmt(nw.cash);
+  document.getElementById('nw-mortgage').textContent = `-€${Number(nw.mortgage).toLocaleString('nl-NL')}`;
+  document.getElementById('nw-note').textContent     = `Apartment valued at €${Number(nw.apartment).toLocaleString('nl-NL')} · SXR8, NVDA, VBTC in IBKR`;
+}
+
+// ── Finance ────────────────────────────────────────────────────
+function renderFinance() {
+  const income = Number(state.finance.income) || 0;
+  const total  = state.finance.expenses.reduce((s,e) => s + Number(e.amount), 0);
+  const net    = income - total;
+  const pct    = income > 0 ? Math.min(100,(total/income)*100) : 0;
+  const cur    = state.currency;
+  const fmtAmt = n => `${cur}${Number(n).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+
+  document.getElementById('fin-income').value = income || '';
+  document.getElementById('fin-currency-label').textContent = cur;
+  document.getElementById('fin-net').textContent  = `${cur}${Math.abs(net).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  document.getElementById('fin-net').className    = 'fin-net' + (net < 0 ? ' negative' : '');
+  document.getElementById('fin-net-label').textContent = net < 0 ? 'over budget' : 'left this month';
+  document.getElementById('fin-bar').style.width  = pct + '%';
+  document.getElementById('fin-bar').className    = 'fin-bar' + (net < 0 ? ' over' : '');
+
+  document.getElementById('fin-expense-list').innerHTML =
+    state.finance.expenses.map(exp => `
+      <div class="fin-row">
+        <span class="fin-row-label">${esc(exp.name)}</span>
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="fin-row-val">${fmtAmt(exp.amount)}</span>
+          <button class="fin-row-del" data-id="${exp.id}">×</button>
+        </span>
+      </div>`).join('') +
+    `<div class="fin-row" style="margin-top:4px">
+      <span class="fin-row-label" style="color:var(--t3);font-size:12px">Total expenses</span>
+      <span class="fin-row-val" style="font-size:13px;color:var(--t2)">${fmtAmt(total)}</span>
+    </div>`;
+
+  document.querySelectorAll('.fin-row-del').forEach(btn =>
+    btn.addEventListener('click', () => {
+      state.finance.expenses = state.finance.expenses.filter(e => e.id !== btn.dataset.id);
+      renderFinance();
+    })
+  );
+}
+
+// ── Google Calendar ────────────────────────────────────────────
+function renderCalendar() {
+  const body = document.getElementById('cal-body');
+  const changeBtn = document.getElementById('btn-cal-change');
+  if (state.calendarUrl) {
+    body.innerHTML = `
+      <iframe class="cal-embed" src="${esc(state.calendarUrl)}" frameborder="0" scrolling="no" allowfullscreen></iframe>
+      <div style="padding-top:8px;font-size:11px;color:var(--t3)">
+        Your Google Calendar · <a class="cal-help-link" href="https://calendar.google.com" target="_blank">Open Calendar ↗</a>
+      </div>`;
+    changeBtn.style.display = 'inline-block';
+  } else {
+    changeBtn.style.display = 'none';
+    body.innerHTML = `
+      <div class="cal-setup">
+        <div class="cal-setup-icon">📅</div>
+        <div class="cal-setup-title">Connect your Google Calendar</div>
+        <div class="cal-setup-desc">
+          Open Google Calendar → Settings (⚙) → your calendar → "Integrate calendar" → copy the <strong>Embed code</strong> URL and paste it below.
+        </div>
+        <div class="cal-url-form">
+          <input class="cal-url-input" id="cal-url-inp" placeholder="https://calendar.google.com/calendar/embed?src=…" type="url">
+          <button class="cal-url-btn" id="cal-url-btn">Connect</button>
+        </div>
+        <a class="cal-help-link" href="https://support.google.com/calendar/answer/41207" target="_blank" rel="noopener">How to find the embed URL ↗</a>
+      </div>`;
+    document.getElementById('cal-url-btn').addEventListener('click', () => {
+      const url = document.getElementById('cal-url-inp').value.trim();
+      if (!url) return;
+      state.calendarUrl = url;
+      saveState();
+      renderCalendar();
+    });
+    document.getElementById('cal-url-inp').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('cal-url-btn').click();
+    });
+  }
+}
+
+// ── Events ─────────────────────────────────────────────────────
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtEvDay(ds) {
+  const [y,m,d] = ds.split('-').map(Number);
+  const dt = new Date(y,m-1,d);
+  return `${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]} ${d} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]}`;
+}
+
+function renderEvents() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const sorted = [...state.events]
+    .filter(ev => !ev.date || new Date(ev.date+'T00:00:00') >= today)
+    .sort((a,b) => !a.date&&!b.date?0:!a.date?1:!b.date?-1:a.date.localeCompare(b.date));
+
+  document.getElementById('ev-count').textContent = `${sorted.length} event${sorted.length!==1?'s':''}`;
+
+  const groups = {};
+  sorted.forEach(ev => { const k=ev.date||'no-date'; (groups[k]=groups[k]||[]).push(ev); });
+
+  let html = '';
+  if (!sorted.length) {
+    html = '<div class="ev-empty">No upcoming events — add one below.</div>';
+  } else {
+    Object.entries(groups).forEach(([k,evts]) => {
+      const isToday = k === todayStr();
+      const label   = k==='no-date' ? 'Undated' : isToday ? 'Today' : fmtEvDay(k);
+      html += `<div class="ev-day-group">
+        <div class="ev-day-label${isToday?' today':''}">${label}</div>
+        ${evts.map(ev => {
+          const mapsUrl = ev.location
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+            : '';
+          return `<div class="ev-item" data-id="${ev.id}">
+            <span class="ev-item-emoji">${ev.emoji||'📅'}</span>
+            <div class="ev-item-body">
+              <div class="ev-item-title">${esc(ev.title)}</div>
+              <div class="ev-item-meta">
+                ${ev.time?`<span>${ev.time}</span>`:''}
+                ${ev.location?`<span>📍 ${esc(ev.location)}</span>`:''}
+                ${mapsUrl?`<a class="ev-item-maplink" href="${esc(mapsUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on Maps ↗</a>`:''}
+              </div>
+            </div>
+            <button class="ev-item-del" data-id="${ev.id}">×</button>
+          </div>`;
+        }).join('')}
+      </div>`;
+    });
+  }
+  document.getElementById('ev-list').innerHTML = html;
+  document.querySelectorAll('.ev-item-del').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      state.events = state.events.filter(ev => ev.id !== btn.dataset.id);
+      renderEvents();
+    })
+  );
+}
+
+function renderEmojiPicker() {
+  document.getElementById('ev-emoji-row').innerHTML = EV_EMOJIS.map(e =>
+    `<button class="emoji-btn${e===evPickedEmoji?' sel':''}" data-e="${e}" type="button">${e}</button>`
+  ).join('');
+  document.getElementById('ev-emoji-row').addEventListener('click', e => {
+    const btn = e.target.closest('.emoji-btn');
+    if (!btn) return;
+    evPickedEmoji = btn.dataset.e;
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('sel', b.dataset.e===evPickedEmoji));
+  });
+}
+
+// ── Reddit feed ────────────────────────────────────────────────
+async function loadFeed(sub) {
+  const el = document.getElementById('feed-body');
+  el.innerHTML = '<div class="feed-loading">Loading…</div>';
+  sub = (sub||state.subreddit||'worldnews').replace(/^r\//,'').trim();
+  state.subreddit = sub;
+  document.getElementById('feed-src-input').value = sub;
+  try {
+    const res  = await fetch(`https://www.reddit.com/r/${encodeURIComponent(sub)}/hot.json?limit=10`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const posts = data.data.children.filter(c => !c.data.stickied).slice(0,7);
+    if (!posts.length) { el.innerHTML='<div class="feed-error">No posts found.</div>'; return; }
+    el.innerHTML = posts.map(c => {
+      const p = c.data;
+      const domain = p.url ? (() => { try { return new URL(p.url).hostname.replace('www.',''); } catch { return ''; } })() : '';
+      const score  = p.score > 999 ? (p.score/1000).toFixed(1)+'k' : p.score;
+      return `<div class="feed-item">
+        <a class="feed-title" href="${esc(p.url||'https://reddit.com'+p.permalink)}" target="_blank" rel="noopener">${esc(p.title)}</a>
+        <div class="feed-meta">
+          <span>↑ ${score}</span>
+          ${domain?`<span>${esc(domain)}</span>`:''}
+          <span>${p.num_comments} comments</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch {
+    el.innerHTML = `<div class="feed-error">Could not load r/${esc(sub)}. Check the subreddit name.</div>`;
+  }
+}
+
+// ── Settings ───────────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('s-name').value      = state.name;
+  document.getElementById('s-city').value      = state.city;
+  document.getElementById('s-currency').value  = state.currency;
+  document.getElementById('s-apartment').value = state.netWorth.apartment;
+  document.getElementById('s-mortgage').value  = state.netWorth.mortgage;
+  document.getElementById('s-ibkr').value      = state.netWorth.ibkr;
+  document.getElementById('s-cash').value      = state.netWorth.cash;
+  const bd = document.getElementById('modal-backdrop');
+  bd.style.display = 'flex';
+  requestAnimationFrame(() => bd.classList.add('open'));
+}
+function closeSettings() {
+  const bd = document.getElementById('modal-backdrop');
+  bd.classList.remove('open');
+  setTimeout(() => { bd.style.display='none'; }, 220);
+}
+
+// ── Save to localStorage ───────────────────────────────────────
+function saveDash() {
+  const btn    = document.getElementById('btn-save');
+  const status = document.getElementById('save-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Saving…';
+  saveState();
+  setTimeout(() => {
+    status.textContent = `Saved ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save`;
+  }, 400);
+}
+
+// ── Init ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-refresh-wx').addEventListener('click', loadWeather);
+  document.getElementById('btn-refresh-feed').addEventListener('click', () => loadFeed(state.subreddit));
+  document.getElementById('btn-settings').addEventListener('click', openSettings);
+  document.getElementById('s-cancel').addEventListener('click', closeSettings);
+  document.getElementById('modal-backdrop').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeSettings();
+  });
+
+  document.getElementById('s-save').addEventListener('click', () => {
+    state.name     = document.getElementById('s-name').value.trim()     || state.name;
+    state.city     = document.getElementById('s-city').value.trim();
+    state.currency = document.getElementById('s-currency').value.trim() || '€';
+    state.netWorth.apartment = Number(document.getElementById('s-apartment').value) || state.netWorth.apartment;
+    state.netWorth.mortgage  = Number(document.getElementById('s-mortgage').value)  || state.netWorth.mortgage;
+    state.netWorth.ibkr      = Number(document.getElementById('s-ibkr').value)      || state.netWorth.ibkr;
+    state.netWorth.cash      = Number(document.getElementById('s-cash').value)      || state.netWorth.cash;
+    saveState();
+    closeSettings();
+    updateClock();
+    renderNetWorth();
+    renderFinance();
+    loadWeather();
+  });
+
+  document.getElementById('btn-cal-change').addEventListener('click', () => {
+    state.calendarUrl = '';
+    saveState();
+    renderCalendar();
+  });
+
+  document.getElementById('fin-income').addEventListener('change', e => {
+    state.finance.income = Number(e.target.value) || 0;
+    renderFinance();
+  });
+  document.getElementById('fin-add-btn').addEventListener('click', () => {
+    const name = document.getElementById('fin-exp-name').value.trim();
+    const amt  = Number(document.getElementById('fin-exp-amt').value);
+    if (!name || !amt) return;
+    state.finance.expenses.push({ id: uid(), name, amount: amt });
+    document.getElementById('fin-exp-name').value = '';
+    document.getElementById('fin-exp-amt').value  = '';
+    renderFinance();
+  });
+
+  renderEmojiPicker();
+  document.getElementById('ev-new-date').value = todayStr();
+  document.getElementById('ev-add-btn').addEventListener('click', () => {
+    const title = document.getElementById('ev-new-title').value.trim();
+    if (!title) { document.getElementById('ev-new-title').focus(); return; }
+    state.events.push({
+      id:       uid(),
+      title,
+      location: document.getElementById('ev-new-location').value.trim(),
+      date:     document.getElementById('ev-new-date').value,
+      time:     document.getElementById('ev-new-time').value,
+      emoji:    evPickedEmoji,
+    });
+    document.getElementById('ev-new-title').value    = '';
+    document.getElementById('ev-new-location').value = '';
+    document.getElementById('ev-new-time').value     = '';
+    renderEvents();
+    saveState();
+  });
+  document.getElementById('ev-new-title').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('ev-add-btn').click();
+  });
+
+  document.getElementById('btn-feed-go').addEventListener('click', () => {
+    const sub = document.getElementById('feed-src-input').value.trim();
+    if (sub) loadFeed(sub);
+  });
+  document.getElementById('feed-src-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-feed-go').click();
+  });
+
+  document.getElementById('btn-save').addEventListener('click', saveDash);
+
+  // Initial renders
+  renderNetWorth();
+  renderFinance();
+  renderEvents();
+  renderCalendar();
+  loadWeather();
+  loadFeed(state.subreddit);
+});
+</script>
+</body>
+</html>
