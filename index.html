@@ -20,8 +20,6 @@
   --warm-d:   #271408;
   --blue:     #6B9FE4;
   --blue-d:   #0E1B2E;
-  --gold:     #C9A84C;
-  --gold-d:   #211A06;
   --t1:       #DDE8E2;
   --t2:       #7A9B8A;
   --t3:       #3E5A4A;
@@ -34,7 +32,6 @@
     --accent: #2E7A52; --accent-d: #E0F0E8;
     --warm: #C4613A; --warm-d: #FAE8E2;
     --blue: #3A6FC0; --blue-d: #E2ECF8;
-    --gold: #A07A1A; --gold-d: #F5EDD0;
     --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
   }
 }
@@ -43,7 +40,6 @@
   --accent: #2E7A52; --accent-d: #E0F0E8;
   --warm: #C4613A; --warm-d: #FAE8E2;
   --blue: #3A6FC0; --blue-d: #E2ECF8;
-  --gold: #A07A1A; --gold-d: #F5EDD0;
   --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -158,78 +154,37 @@ body {
 }
 .wx-city-btn:hover { opacity: .85; }
 
-/* ── Net Worth ─────────────────────────────────────────────────── */
-.nw-total {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 30px; font-weight: 700; color: var(--gold); line-height: 1;
-  margin-bottom: 4px;
+/* ── Map ─────────────────────────────────────────────────── */
+.map-iframe {
+  width: 100%; height: 300px; border: none;
+  border-radius: 9px; display: block;
 }
-.nw-label { font-size: 12px; color: var(--t2); margin-bottom: 14px; }
-.nw-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;
+.map-search-row {
+  display: flex; gap: 6px; margin-top: 10px;
 }
-.nw-tile { background: var(--s2); border-radius: 9px; padding: 10px 11px; }
-.nw-tile-label { font-size: 10.5px; color: var(--t3); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
-.nw-tile-val {
-  font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.nw-tile-val.positive { color: var(--accent); }
-.nw-tile-val.negative { color: var(--warm); }
-.nw-tile-val.gold     { color: var(--gold); }
-.nw-tile-val.blue     { color: var(--blue); }
-.nw-note { font-size: 11px; color: var(--t3); margin-top: 4px; }
-
-/* ── Finance ─────────────────────────────────────────────────── */
-.fin-net {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1;
-}
-.fin-net.negative { color: var(--warm); }
-.fin-net-label { font-size: 12px; color: var(--t2); margin-bottom: 14px; }
-.fin-bar-wrap { height: 6px; background: var(--s3); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
-.fin-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s ease; min-width: 4px; }
-.fin-bar.over { background: var(--warm); }
-.fin-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;
-}
-.fin-row:last-child { border-bottom: none; }
-.fin-row-label { color: var(--t2); }
-.fin-row-val { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
-.fin-row-del {
-  background: none; border: none; cursor: pointer;
-  color: var(--t3); font-size: 13px; padding: 0 0 0 8px; transition: color .15s;
-}
-.fin-row-del:hover { color: var(--warm); }
-.fin-add { display: flex; gap: 6px; margin-top: 10px; }
-.fin-add input {
-  background: var(--s2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 9px;
-  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
-}
-.fin-add input:focus { outline: none; border-color: var(--accent); }
-.fin-add input.fin-name { flex: 1; }
-.fin-add input.fin-amt  { width: 72px; }
-.fin-add-btn {
-  padding: 7px 10px; border-radius: 7px;
-  background: var(--s2); border: 1px solid var(--border);
-  color: var(--t1); font-size: 14px; cursor: pointer; transition: background .15s;
-}
-.fin-add-btn:hover { background: var(--s3); }
-.fin-income-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.fin-income-label { font-size: 12px; color: var(--t2); white-space: nowrap; }
-.fin-income-input {
+.map-search-input {
   flex: 1; background: var(--s2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 6px 10px;
-  font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: var(--t1);
+  border-radius: 8px; padding: 8px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
 }
-.fin-income-input:focus { outline: none; border-color: var(--accent); }
+.map-search-input:focus { outline: none; border-color: var(--accent); }
+.map-search-btn {
+  padding: 8px 13px; border-radius: 8px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+.map-search-btn:hover { opacity: .85; }
+.map-open-link {
+  display: block; margin-top: 8px;
+  font-size: 11.5px; color: var(--blue); text-decoration: none; text-align: right;
+}
+.map-open-link:hover { text-decoration: underline; }
 
 /* ── Calendar ─────────────────────────────────────────────────── */
 .cal-embed {
   width: 100%; border: none; border-radius: 9px;
-  min-height: 320px; background: var(--s2);
+  min-height: 400px; background: var(--s2);
 }
 .cal-setup {
   padding: 20px 0; display: flex; flex-direction: column;
@@ -258,92 +213,46 @@ body {
 }
 .cal-change-btn:hover { color: var(--warm); }
 
-/* ── Events ─────────────────────────────────────────────────── */
-.ev-day-group { margin-bottom: 14px; }
-.ev-day-label {
-  font-size: 11px; font-weight: 600; letter-spacing: .07em;
-  text-transform: uppercase; color: var(--t3); margin-bottom: 6px;
+/* ── Jobs ─────────────────────────────────────────────────── */
+.jobs-filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
 }
-.ev-day-label.today { color: var(--accent); }
-.ev-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 8px; margin-bottom: 4px;
-  background: var(--s2); transition: background .1s;
+.jobs-chip {
+  padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--s2); color: var(--t2);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
 }
-.ev-item:hover { background: var(--s3); }
-.ev-item-emoji { font-size: 17px; flex-shrink: 0; }
-.ev-item-body { flex: 1; min-width: 0; }
-.ev-item-title { font-size: 13.5px; font-weight: 500; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ev-item-meta  { font-size: 11px; color: var(--t2); display: flex; align-items: center; gap: 8px; }
-.ev-item-maplink {
-  font-size: 10.5px; color: var(--blue); text-decoration: none; white-space: nowrap;
-  opacity: 0; transition: opacity .1s;
-}
-.ev-item:hover .ev-item-maplink { opacity: 1; }
-.ev-item-maplink:hover { text-decoration: underline; }
-.ev-item-del {
-  background: none; border: none; cursor: pointer;
-  color: var(--t3); font-size: 13px; padding: 0; flex-shrink: 0;
-  opacity: 0; transition: opacity .1s, color .1s;
-}
-.ev-item:hover .ev-item-del { opacity: 1; }
-.ev-item-del:hover { color: var(--warm); }
-.ev-empty { font-size: 13px; color: var(--t3); padding: 8px 0; }
-.ev-add-form {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px;
-}
-.ev-input {
-  background: var(--s2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 7px 10px;
-  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
-}
-.ev-input:focus { outline: none; border-color: var(--accent); }
-.ev-input.ev-title    { flex: 1; min-width: 130px; }
-.ev-input.ev-location { flex: 1; min-width: 120px; }
-.ev-input.ev-date     { width: 136px; }
-.ev-input.ev-time     { width: 96px; }
-.ev-add-btn {
-  padding: 7px 14px; border-radius: 7px;
-  background: var(--accent); color: #fff; border: none;
-  font-size: 13px; font-weight: 500; cursor: pointer;
-  font-family: 'Outfit', sans-serif; transition: opacity .15s;
-}
-.ev-add-btn:hover { opacity: .85; }
-
-/* ── Feed ─────────────────────────────────────────────────── */
-.feed-item {
-  display: flex; flex-direction: column;
+.jobs-chip.active { background: var(--accent-d); border-color: var(--accent); color: var(--accent); }
+.jobs-chip:hover:not(.active) { border-color: var(--t3); color: var(--t1); }
+.job-item {
+  display: flex; flex-direction: column; gap: 3px;
   padding: 10px 0; border-bottom: 1px solid var(--border);
 }
-.feed-item:first-child { padding-top: 0; }
-.feed-item:last-child  { border-bottom: none; padding-bottom: 0; }
-.feed-title {
-  font-size: 13.5px; font-weight: 500; color: var(--t1);
-  line-height: 1.4; margin-bottom: 4px; text-decoration: none;
+.job-item:first-child { padding-top: 0; }
+.job-item:last-child  { border-bottom: none; padding-bottom: 0; }
+.job-title {
+  font-size: 13px; font-weight: 500; color: var(--t1);
+  text-decoration: none; line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.feed-title:hover { color: var(--accent); }
-.feed-meta { font-size: 11px; color: var(--t2); display: flex; gap: 10px; }
-.feed-loading { padding: 12px 0; font-size: 13px; color: var(--t2); }
-.feed-error   { padding: 12px 0; font-size: 13px; color: var(--warm); }
-.feed-src {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-  padding: 7px 10px; border-radius: 8px; background: var(--s2);
-  font-size: 12px; color: var(--t2);
+.job-title:hover { color: var(--accent); }
+.job-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.job-company {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
+  padding: 2px 7px; border-radius: 20px;
 }
-.feed-src-input {
-  flex: 1; background: transparent; border: none;
-  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1); padding: 0;
+.job-location { font-size: 11px; color: var(--t2); }
+.job-dept     { font-size: 11px; color: var(--t3); }
+.jobs-loading { padding: 20px 0; text-align: center; font-size: 13px; color: var(--t2); }
+.jobs-empty   { padding: 12px 0; font-size: 13px; color: var(--t3); }
+.jobs-search-row { display: flex; gap: 6px; margin-bottom: 12px; }
+.jobs-search-inp {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
 }
-.feed-src-input:focus { outline: none; }
-.feed-go-btn {
-  padding: 4px 10px; border-radius: 6px;
-  background: var(--s3); border: 1px solid var(--border);
-  color: var(--t1); font-size: 12px; cursor: pointer;
-  font-family: 'Outfit', sans-serif; transition: background .15s;
-}
-.feed-go-btn:hover { background: var(--border); }
+.jobs-search-inp:focus { outline: none; border-color: var(--accent); }
+.jobs-count { font-size: 11px; color: var(--t3); margin-bottom: 10px; }
 
 /* ── Settings modal ─────────────────────────────────────────── */
 .modal-backdrop {
@@ -382,25 +291,6 @@ body {
 .save-status { font-size: 11px; color: var(--t3); font-style: italic; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { display: inline-block; animation: spin .7s linear infinite; }
-.chip {
-  display: inline-flex; align-items: center;
-  padding: 2px 8px; border-radius: 20px;
-  font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
-}
-.chip-green { background: var(--accent-d); color: var(--accent); }
-.chip-warm  { background: var(--warm-d);   color: var(--warm); }
-.emoji-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-.emoji-btn {
-  width: 30px; height: 30px; border-radius: 6px;
-  border: 2px solid transparent; background: var(--s2);
-  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.emoji-btn.sel { border-color: var(--accent); background: var(--accent-d); }
-.data-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 10px; color: var(--t3); letter-spacing: .03em;
-}
-.data-badge::before { content: '●'; font-size: 7px; color: var(--accent); }
 </style>
 </head>
 <body>
@@ -438,58 +328,26 @@ body {
       </div>
     </div>
 
-    <!-- Net Worth -->
+    <!-- Map -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Net Worth</span>
-        <span class="data-badge">May 2026</span>
+        <span class="card-title">Map</span>
+        <button class="card-action" id="btn-map-reset" title="Reset to Amsterdam" style="font-size:12px;font-family:'Outfit',sans-serif;letter-spacing:.04em">Amsterdam</button>
       </div>
-      <div class="card-body">
-        <div class="nw-total" id="nw-total">€0</div>
-        <div class="nw-label">Total net worth snapshot</div>
-        <div class="nw-grid">
-          <div class="nw-tile">
-            <div class="nw-tile-label">Home Equity</div>
-            <div class="nw-tile-val positive" id="nw-equity">€0</div>
-          </div>
-          <div class="nw-tile">
-            <div class="nw-tile-label">IBKR Portfolio</div>
-            <div class="nw-tile-val blue" id="nw-ibkr">€0</div>
-          </div>
-          <div class="nw-tile">
-            <div class="nw-tile-label">Cash</div>
-            <div class="nw-tile-val positive" id="nw-cash">€0</div>
-          </div>
-          <div class="nw-tile">
-            <div class="nw-tile-label">Mortgage</div>
-            <div class="nw-tile-val negative" id="nw-mortgage">-€0</div>
-          </div>
+      <div class="card-body" style="padding-bottom:16px">
+        <iframe
+          id="map-iframe"
+          class="map-iframe"
+          src="https://maps.google.com/maps?q=Amsterdam,Netherlands&z=13&output=embed"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+        <div class="map-search-row">
+          <input class="map-search-input" id="map-search-inp" placeholder="Search a place…" type="text">
+          <button class="map-search-btn" id="btn-map-search">Search</button>
         </div>
-        <div class="nw-note" id="nw-note"></div>
-      </div>
-    </div>
-
-    <!-- Monthly Budget -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Monthly Budget</span>
-        <span class="data-badge">May 2026</span>
-      </div>
-      <div class="card-body">
-        <div class="fin-income-row">
-          <span class="fin-income-label">Income</span>
-          <input class="fin-income-input" id="fin-income" type="number" min="0" placeholder="0">
-          <span style="font-size:13px;color:var(--t2)" id="fin-currency-label">€</span>
-        </div>
-        <div class="fin-net" id="fin-net">€0</div>
-        <div class="fin-net-label" id="fin-net-label">left after expenses</div>
-        <div class="fin-bar-wrap"><div class="fin-bar" id="fin-bar" style="width:0%"></div></div>
-        <div id="fin-expense-list"></div>
-        <div class="fin-add">
-          <input class="fin-name" placeholder="Expense name" id="fin-exp-name" type="text">
-          <input class="fin-amt"  placeholder="0" id="fin-exp-amt" type="number" min="0">
-          <button class="fin-add-btn" id="fin-add-btn">+</button>
-        </div>
+        <a class="map-open-link" id="map-open-link" href="https://maps.google.com" target="_blank" rel="noopener">Open in Google Maps ↗</a>
       </div>
     </div>
 
@@ -507,38 +365,17 @@ body {
       <div class="card-body" id="cal-body"></div>
     </div>
 
-    <!-- Upcoming Events -->
+    <!-- Jobs -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Upcoming</span>
-        <span class="chip chip-green" id="ev-count">0 events</span>
+        <span class="card-title">Vacancies</span>
+        <button class="card-action" id="btn-refresh-jobs" title="Refresh">↻</button>
       </div>
       <div class="card-body">
-        <div id="ev-list"></div>
-        <div class="ev-add-form">
-          <div class="emoji-row" id="ev-emoji-row"></div>
-          <input class="ev-input ev-title"    id="ev-new-title"    placeholder="Event name" type="text">
-          <input class="ev-input ev-location" id="ev-new-location" placeholder="📍 Location (optional)" type="text">
-          <input class="ev-input ev-date"     id="ev-new-date"     type="date">
-          <input class="ev-input ev-time"     id="ev-new-time"     type="time">
-          <button class="ev-add-btn" id="ev-add-btn">Add event</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reddit Feed -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Feed</span>
-        <button class="card-action" id="btn-refresh-feed" title="Refresh">↻</button>
-      </div>
-      <div class="card-body">
-        <div class="feed-src">
-          <span>r/</span>
-          <input class="feed-src-input" id="feed-src-input" placeholder="subreddit" value="worldnews">
-          <button class="feed-go-btn" id="btn-feed-go">Go</button>
-        </div>
-        <div id="feed-body"><div class="feed-loading">Loading…</div></div>
+        <div class="jobs-filter-row" id="jobs-chips"></div>
+        <input class="jobs-search-inp" id="jobs-search" placeholder="Filter by keyword…" type="text">
+        <div class="jobs-count" id="jobs-count"></div>
+        <div id="jobs-body"><div class="jobs-loading">Loading vacancies…</div></div>
       </div>
     </div>
 
@@ -557,26 +394,6 @@ body {
       <label class="settings-label" for="s-city">City (weather)</label>
       <input class="settings-input" id="s-city" placeholder="Amsterdam">
     </div>
-    <div class="settings-field">
-      <label class="settings-label" for="s-currency">Currency symbol</label>
-      <input class="settings-input" id="s-currency" placeholder="€" style="width:80px">
-    </div>
-    <div class="settings-field">
-      <label class="settings-label" for="s-apartment">Apartment value (€)</label>
-      <input class="settings-input" id="s-apartment" type="number" placeholder="551000">
-    </div>
-    <div class="settings-field">
-      <label class="settings-label" for="s-mortgage">Mortgage balance (€)</label>
-      <input class="settings-input" id="s-mortgage" type="number" placeholder="214035">
-    </div>
-    <div class="settings-field">
-      <label class="settings-label" for="s-ibkr">IBKR portfolio (€)</label>
-      <input class="settings-input" id="s-ibkr" type="number" placeholder="18500">
-    </div>
-    <div class="settings-field">
-      <label class="settings-label" for="s-cash">Cash (€)</label>
-      <input class="settings-input" id="s-cash" type="number" placeholder="7480">
-    </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" id="s-cancel">Cancel</button>
       <button class="btn btn-primary"   id="s-save">Save settings</button>
@@ -589,38 +406,10 @@ body {
 const DEFAULTS = {
   name:        'Chris',
   city:        'Amsterdam',
-  subreddit:   'worldnews',
-  currency:    '€',
   calendarUrl: '',
-  events:      [],
-  finance: {
-    income: 4779.22,
-    expenses: [
-      {id:'h1', name:'Housing',          amount:1509.45},
-      {id:'h2', name:'Groceries',        amount:307.29},
-      {id:'h3', name:'Health Insurance', amount:177.40},
-      {id:'h4', name:'Dining & Going Out',amount:297.65},
-      {id:'h5', name:'Coffee & Cafés',   amount:41.57},
-      {id:'h6', name:'Shopping',         amount:168.06},
-      {id:'h7', name:'Subscriptions',    amount:178.03},
-      {id:'h8', name:'Gym',              amount:55.00},
-      {id:'h9', name:'Telecom',          amount:79.90},
-      {id:'h10',name:'Transport',        amount:12.00},
-      {id:'h11',name:'Insurance',        amount:30.97},
-      {id:'h12',name:'Other',            amount:10.20},
-    ]
-  },
-  netWorth: {
-    apartment: 551000,
-    mortgage:  214035,
-    ibkr:      18500,
-    cash:      7479.57,
-  },
 };
 
 // ── Load / persist state via localStorage ──────────────────────
-// State lives in localStorage so it survives page refreshes.
-// The defaults above are only used on first visit.
 function loadState() {
   try {
     const saved = localStorage.getItem('dash-state');
@@ -636,14 +425,11 @@ function saveState() {
 const state = loadState();
 
 // ── Helpers ────────────────────────────────────────────────────
-const uid = () => Math.random().toString(36).slice(2, 9);
 const esc = s => !s ? '' : String(s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const EV_EMOJIS = ['📅','🎉','🍽️','🎬','✈️','🏖️','☕','🎵','🏋️','❤️','🎂','🛍️','🏛️','🌷'];
-let evPickedEmoji = '📅';
 
 // ── Clock ──────────────────────────────────────────────────────
 function updateClock() {
@@ -656,6 +442,25 @@ function updateClock() {
   document.title = `${state.name}'s Dashboard`;
 }
 setInterval(updateClock, 1000); updateClock();
+
+// ── Map ────────────────────────────────────────────────────────
+const MAP_DEFAULT_QUERY = 'Amsterdam,Netherlands';
+const MAP_DEFAULT = `https://maps.google.com/maps?q=${encodeURIComponent(MAP_DEFAULT_QUERY)}&z=13&output=embed`;
+
+function updateMapLink(query) {
+  const link = document.getElementById('map-open-link');
+  if (link) link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function showOnMap(location, zoom) {
+  if (!location) return;
+  const z = zoom || 15;
+  const iframe = document.getElementById('map-iframe');
+  if (!iframe) return;
+  iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(location)}&z=${z}&output=embed`;
+  updateMapLink(location);
+}
+window.showOnMap = showOnMap;
 
 // ── Weather ────────────────────────────────────────────────────
 const WMO = {
@@ -759,58 +564,118 @@ async function loadWeather() {
   );
 }
 
-// ── Net Worth ──────────────────────────────────────────────────
-function renderNetWorth() {
-  const nw = state.netWorth;
-  const equity = nw.apartment - nw.mortgage;
-  const total  = equity + nw.ibkr + nw.cash;
-  const fmt = n => `€${Number(n).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:0})}`;
+// ── Jobs / Vacancies ───────────────────────────────────────────
+const JOB_COMPANIES = [
+  { name: 'All',         color: '#5AAF80', slug: null },
+  { name: 'Adyen',       color: '#0ABF53', lever: 'adyen',       url: 'https://careers.adyen.com' },
+  { name: 'Booking.com', color: '#003B95', greenhouse: 'bookingcom', url: 'https://jobs.booking.com' },
+  { name: 'Mollie',      color: '#FF6640', lever: 'mollie',      url: 'https://www.mollie.com/en/jobs' },
+  { name: 'Stripe',      color: '#635BFF', greenhouse: 'stripe', url: 'https://stripe.com/jobs' },
+  { name: 'ASML',        color: '#00A0E3', greenhouse: 'asml',   url: 'https://www.asml.com/en/careers' },
+  { name: 'Picnic',      color: '#7CB925', lever: 'picnic',      url: 'https://picnic.app/nl/over-ons/vacatures/' },
+];
 
-  document.getElementById('nw-total').textContent    = fmt(total);
-  document.getElementById('nw-equity').textContent   = fmt(equity);
-  document.getElementById('nw-ibkr').textContent     = fmt(nw.ibkr);
-  document.getElementById('nw-cash').textContent     = fmt(nw.cash);
-  document.getElementById('nw-mortgage').textContent = `-€${Number(nw.mortgage).toLocaleString('nl-NL')}`;
-  document.getElementById('nw-note').textContent     = `Apartment valued at €${Number(nw.apartment).toLocaleString('nl-NL')} · SXR8, NVDA, VBTC in IBKR`;
+let allJobs = [];
+let activeCompany = 'All';
+
+async function fetchGreenhouse(slug) {
+  try {
+    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (data.jobs || []).map(j => ({
+      title:    j.title,
+      url:      j.absolute_url,
+      location: (j.location?.name || ''),
+      dept:     (j.departments?.[0]?.name || ''),
+      company:  slug,
+    }));
+  } catch { return []; }
 }
 
-// ── Finance ────────────────────────────────────────────────────
-function renderFinance() {
-  const income = Number(state.finance.income) || 0;
-  const total  = state.finance.expenses.reduce((s,e) => s + Number(e.amount), 0);
-  const net    = income - total;
-  const pct    = income > 0 ? Math.min(100,(total/income)*100) : 0;
-  const cur    = state.currency;
-  const fmtAmt = n => `${cur}${Number(n).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+async function fetchLever(slug) {
+  try {
+    const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (Array.isArray(data) ? data : []).map(j => ({
+      title:    j.text,
+      url:      j.hostedUrl,
+      location: j.categories?.location || j.workplaceType || '',
+      dept:     j.categories?.team || j.categories?.department || '',
+      company:  slug,
+    }));
+  } catch { return []; }
+}
 
-  document.getElementById('fin-income').value = income || '';
-  document.getElementById('fin-currency-label').textContent = cur;
-  document.getElementById('fin-net').textContent  = `${cur}${Math.abs(net).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  document.getElementById('fin-net').className    = 'fin-net' + (net < 0 ? ' negative' : '');
-  document.getElementById('fin-net-label').textContent = net < 0 ? 'over budget' : 'left this month';
-  document.getElementById('fin-bar').style.width  = pct + '%';
-  document.getElementById('fin-bar').className    = 'fin-bar' + (net < 0 ? ' over' : '');
+async function loadJobs() {
+  document.getElementById('jobs-body').innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+  document.getElementById('jobs-count').textContent = '';
 
-  document.getElementById('fin-expense-list').innerHTML =
-    state.finance.expenses.map(exp => `
-      <div class="fin-row">
-        <span class="fin-row-label">${esc(exp.name)}</span>
-        <span style="display:flex;align-items:center;gap:4px">
-          <span class="fin-row-val">${fmtAmt(exp.amount)}</span>
-          <button class="fin-row-del" data-id="${exp.id}">×</button>
-        </span>
-      </div>`).join('') +
-    `<div class="fin-row" style="margin-top:4px">
-      <span class="fin-row-label" style="color:var(--t3);font-size:12px">Total expenses</span>
-      <span class="fin-row-val" style="font-size:13px;color:var(--t2)">${fmtAmt(total)}</span>
+  const fetches = JOB_COMPANIES.filter(c => c.slug !== null).map(c => {
+    if (c.greenhouse) return fetchGreenhouse(c.greenhouse).then(jobs => jobs.map(j => ({ ...j, company: c.name, companyColor: c.color, companyUrl: c.url })));
+    if (c.lever)      return fetchLever(c.lever).then(jobs =>      jobs.map(j => ({ ...j, company: c.name, companyColor: c.color, companyUrl: c.url })));
+    return Promise.resolve([]);
+  });
+
+  const results = await Promise.all(fetches);
+  allJobs = results.flat();
+  renderJobs();
+}
+
+function renderJobs() {
+  const searchQ   = (document.getElementById('jobs-search')?.value || '').toLowerCase().trim();
+  const filtered  = allJobs.filter(j => {
+    const matchCompany = activeCompany === 'All' || j.company === activeCompany;
+    const matchSearch  = !searchQ ||
+      j.title.toLowerCase().includes(searchQ) ||
+      j.dept.toLowerCase().includes(searchQ) ||
+      j.location.toLowerCase().includes(searchQ);
+    return matchCompany && matchSearch;
+  });
+
+  // Sort: Amsterdam/Netherlands first
+  filtered.sort((a, b) => {
+    const aAms = /amsterdam|netherlands|nl\b/i.test(a.location) ? 0 : 1;
+    const bAms = /amsterdam|netherlands|nl\b/i.test(b.location) ? 0 : 1;
+    return aAms - bAms;
+  });
+
+  const shown = filtered.slice(0, 20);
+  const countEl = document.getElementById('jobs-count');
+  countEl.textContent = filtered.length ? `${filtered.length} open role${filtered.length!==1?'s':''}` : '';
+
+  if (!shown.length) {
+    document.getElementById('jobs-body').innerHTML =
+      `<div class="jobs-empty">${allJobs.length ? 'No matches — try a different filter.' : 'Could not load vacancies. Check back later.'}</div>`;
+    return;
+  }
+
+  document.getElementById('jobs-body').innerHTML = shown.map(j => {
+    const loc = j.location ? `📍 ${esc(j.location)}` : '';
+    return `<div class="job-item">
+      <a class="job-title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
+      <div class="job-meta">
+        <span class="job-company" style="background:${j.companyColor}22;color:${j.companyColor}">${esc(j.company)}</span>
+        ${loc ? `<span class="job-location">${loc}</span>` : ''}
+        ${j.dept ? `<span class="job-dept">${esc(j.dept)}</span>` : ''}
+      </div>
     </div>`;
+  }).join('');
+}
 
-  document.querySelectorAll('.fin-row-del').forEach(btn =>
-    btn.addEventListener('click', () => {
-      state.finance.expenses = state.finance.expenses.filter(e => e.id !== btn.dataset.id);
-      renderFinance();
-    })
-  );
+function renderJobChips() {
+  const row = document.getElementById('jobs-chips');
+  row.innerHTML = JOB_COMPANIES.map(c =>
+    `<button class="jobs-chip${c.name === activeCompany ? ' active' : ''}" data-co="${c.name}">${c.name}</button>`
+  ).join('');
+  row.addEventListener('click', e => {
+    const btn = e.target.closest('.jobs-chip');
+    if (!btn) return;
+    activeCompany = btn.dataset.co;
+    document.querySelectorAll('.jobs-chip').forEach(b => b.classList.toggle('active', b.dataset.co === activeCompany));
+    renderJobs();
+  });
 }
 
 // ── Google Calendar ────────────────────────────────────────────
@@ -852,119 +717,10 @@ function renderCalendar() {
   }
 }
 
-// ── Events ─────────────────────────────────────────────────────
-function todayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function fmtEvDay(ds) {
-  const [y,m,d] = ds.split('-').map(Number);
-  const dt = new Date(y,m-1,d);
-  return `${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()]} ${d} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]}`;
-}
-
-function renderEvents() {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const sorted = [...state.events]
-    .filter(ev => !ev.date || new Date(ev.date+'T00:00:00') >= today)
-    .sort((a,b) => !a.date&&!b.date?0:!a.date?1:!b.date?-1:a.date.localeCompare(b.date));
-
-  document.getElementById('ev-count').textContent = `${sorted.length} event${sorted.length!==1?'s':''}`;
-
-  const groups = {};
-  sorted.forEach(ev => { const k=ev.date||'no-date'; (groups[k]=groups[k]||[]).push(ev); });
-
-  let html = '';
-  if (!sorted.length) {
-    html = '<div class="ev-empty">No upcoming events — add one below.</div>';
-  } else {
-    Object.entries(groups).forEach(([k,evts]) => {
-      const isToday = k === todayStr();
-      const label   = k==='no-date' ? 'Undated' : isToday ? 'Today' : fmtEvDay(k);
-      html += `<div class="ev-day-group">
-        <div class="ev-day-label${isToday?' today':''}">${label}</div>
-        ${evts.map(ev => {
-          const mapsUrl = ev.location
-            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
-            : '';
-          return `<div class="ev-item" data-id="${ev.id}">
-            <span class="ev-item-emoji">${ev.emoji||'📅'}</span>
-            <div class="ev-item-body">
-              <div class="ev-item-title">${esc(ev.title)}</div>
-              <div class="ev-item-meta">
-                ${ev.time?`<span>${ev.time}</span>`:''}
-                ${ev.location?`<span>📍 ${esc(ev.location)}</span>`:''}
-                ${mapsUrl?`<a class="ev-item-maplink" href="${esc(mapsUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on Maps ↗</a>`:''}
-              </div>
-            </div>
-            <button class="ev-item-del" data-id="${ev.id}">×</button>
-          </div>`;
-        }).join('')}
-      </div>`;
-    });
-  }
-  document.getElementById('ev-list').innerHTML = html;
-  document.querySelectorAll('.ev-item-del').forEach(btn =>
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      state.events = state.events.filter(ev => ev.id !== btn.dataset.id);
-      renderEvents();
-    })
-  );
-}
-
-function renderEmojiPicker() {
-  document.getElementById('ev-emoji-row').innerHTML = EV_EMOJIS.map(e =>
-    `<button class="emoji-btn${e===evPickedEmoji?' sel':''}" data-e="${e}" type="button">${e}</button>`
-  ).join('');
-  document.getElementById('ev-emoji-row').addEventListener('click', e => {
-    const btn = e.target.closest('.emoji-btn');
-    if (!btn) return;
-    evPickedEmoji = btn.dataset.e;
-    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('sel', b.dataset.e===evPickedEmoji));
-  });
-}
-
-// ── Reddit feed ────────────────────────────────────────────────
-async function loadFeed(sub) {
-  const el = document.getElementById('feed-body');
-  el.innerHTML = '<div class="feed-loading">Loading…</div>';
-  sub = (sub||state.subreddit||'worldnews').replace(/^r\//,'').trim();
-  state.subreddit = sub;
-  document.getElementById('feed-src-input').value = sub;
-  try {
-    const res  = await fetch(`https://www.reddit.com/r/${encodeURIComponent(sub)}/hot.json?limit=10`);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    const posts = data.data.children.filter(c => !c.data.stickied).slice(0,7);
-    if (!posts.length) { el.innerHTML='<div class="feed-error">No posts found.</div>'; return; }
-    el.innerHTML = posts.map(c => {
-      const p = c.data;
-      const domain = p.url ? (() => { try { return new URL(p.url).hostname.replace('www.',''); } catch { return ''; } })() : '';
-      const score  = p.score > 999 ? (p.score/1000).toFixed(1)+'k' : p.score;
-      return `<div class="feed-item">
-        <a class="feed-title" href="${esc(p.url||'https://reddit.com'+p.permalink)}" target="_blank" rel="noopener">${esc(p.title)}</a>
-        <div class="feed-meta">
-          <span>↑ ${score}</span>
-          ${domain?`<span>${esc(domain)}</span>`:''}
-          <span>${p.num_comments} comments</span>
-        </div>
-      </div>`;
-    }).join('');
-  } catch {
-    el.innerHTML = `<div class="feed-error">Could not load r/${esc(sub)}. Check the subreddit name.</div>`;
-  }
-}
-
 // ── Settings ───────────────────────────────────────────────────
 function openSettings() {
-  document.getElementById('s-name').value      = state.name;
-  document.getElementById('s-city').value      = state.city;
-  document.getElementById('s-currency').value  = state.currency;
-  document.getElementById('s-apartment').value = state.netWorth.apartment;
-  document.getElementById('s-mortgage').value  = state.netWorth.mortgage;
-  document.getElementById('s-ibkr').value      = state.netWorth.ibkr;
-  document.getElementById('s-cash').value      = state.netWorth.cash;
+  document.getElementById('s-name').value = state.name;
+  document.getElementById('s-city').value = state.city;
   const bd = document.getElementById('modal-backdrop');
   bd.style.display = 'flex';
   requestAnimationFrame(() => bd.classList.add('open'));
@@ -992,26 +748,34 @@ function saveDash() {
 // ── Init ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-refresh-wx').addEventListener('click', loadWeather);
-  document.getElementById('btn-refresh-feed').addEventListener('click', () => loadFeed(state.subreddit));
   document.getElementById('btn-settings').addEventListener('click', openSettings);
   document.getElementById('s-cancel').addEventListener('click', closeSettings);
   document.getElementById('modal-backdrop').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeSettings();
   });
 
+  document.getElementById('btn-map-reset').addEventListener('click', () => {
+    document.getElementById('map-iframe').src = MAP_DEFAULT;
+    updateMapLink(MAP_DEFAULT_QUERY);
+  });
+
+  const mapGoFn = () => {
+    const q = document.getElementById('map-search-inp').value.trim();
+    if (!q) return;
+    showOnMap(q, 14);
+    document.getElementById('map-search-inp').value = '';
+  };
+  document.getElementById('btn-map-search').addEventListener('click', mapGoFn);
+  document.getElementById('map-search-inp').addEventListener('keydown', e => {
+    if (e.key === 'Enter') mapGoFn();
+  });
+
   document.getElementById('s-save').addEventListener('click', () => {
-    state.name     = document.getElementById('s-name').value.trim()     || state.name;
-    state.city     = document.getElementById('s-city').value.trim();
-    state.currency = document.getElementById('s-currency').value.trim() || '€';
-    state.netWorth.apartment = Number(document.getElementById('s-apartment').value) || state.netWorth.apartment;
-    state.netWorth.mortgage  = Number(document.getElementById('s-mortgage').value)  || state.netWorth.mortgage;
-    state.netWorth.ibkr      = Number(document.getElementById('s-ibkr').value)      || state.netWorth.ibkr;
-    state.netWorth.cash      = Number(document.getElementById('s-cash').value)      || state.netWorth.cash;
+    state.name = document.getElementById('s-name').value.trim() || state.name;
+    state.city = document.getElementById('s-city').value.trim();
     saveState();
     closeSettings();
     updateClock();
-    renderNetWorth();
-    renderFinance();
     loadWeather();
   });
 
@@ -1021,60 +785,18 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
   });
 
-  document.getElementById('fin-income').addEventListener('change', e => {
-    state.finance.income = Number(e.target.value) || 0;
-    renderFinance();
-  });
-  document.getElementById('fin-add-btn').addEventListener('click', () => {
-    const name = document.getElementById('fin-exp-name').value.trim();
-    const amt  = Number(document.getElementById('fin-exp-amt').value);
-    if (!name || !amt) return;
-    state.finance.expenses.push({ id: uid(), name, amount: amt });
-    document.getElementById('fin-exp-name').value = '';
-    document.getElementById('fin-exp-amt').value  = '';
-    renderFinance();
-  });
-
-  renderEmojiPicker();
-  document.getElementById('ev-new-date').value = todayStr();
-  document.getElementById('ev-add-btn').addEventListener('click', () => {
-    const title = document.getElementById('ev-new-title').value.trim();
-    if (!title) { document.getElementById('ev-new-title').focus(); return; }
-    state.events.push({
-      id:       uid(),
-      title,
-      location: document.getElementById('ev-new-location').value.trim(),
-      date:     document.getElementById('ev-new-date').value,
-      time:     document.getElementById('ev-new-time').value,
-      emoji:    evPickedEmoji,
-    });
-    document.getElementById('ev-new-title').value    = '';
-    document.getElementById('ev-new-location').value = '';
-    document.getElementById('ev-new-time').value     = '';
-    renderEvents();
-    saveState();
-  });
-  document.getElementById('ev-new-title').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('ev-add-btn').click();
-  });
-
-  document.getElementById('btn-feed-go').addEventListener('click', () => {
-    const sub = document.getElementById('feed-src-input').value.trim();
-    if (sub) loadFeed(sub);
-  });
-  document.getElementById('feed-src-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btn-feed-go').click();
-  });
-
   document.getElementById('btn-save').addEventListener('click', saveDash);
+  document.getElementById('btn-refresh-jobs').addEventListener('click', loadJobs);
+  document.getElementById('jobs-search').addEventListener('input', renderJobs);
+
+  // Set initial "Open in Google Maps" link
+  updateMapLink(MAP_DEFAULT_QUERY);
 
   // Initial renders
-  renderNetWorth();
-  renderFinance();
-  renderEvents();
   renderCalendar();
+  renderJobChips();
   loadWeather();
-  loadFeed(state.subreddit);
+  loadJobs();
 });
 </script>
 </body>
