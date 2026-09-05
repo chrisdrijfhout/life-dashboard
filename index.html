@@ -8,39 +8,39 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap">
 
 <style>
-/* ── Tokens ─────────────────────────────────────────────────── */
+/* ── Tokens — Amsterdam Canal ───────────────────────────────── */
 :root {
-  --bg:       #0C1210;
-  --s1:       #131A16;
-  --s2:       #1A2420;
-  --s3:       #22302A;
-  --accent:   #5AAF80;
-  --accent-d: #0F2318;
+  --bg:       #0A1622;
+  --s1:       #111F2E;
+  --s2:       #182C3F;
+  --s3:       #1F3850;
+  --accent:   #4EA8D2;
+  --accent-d: #0D1E2E;
   --warm:     #E07A5F;
-  --warm-d:   #271408;
-  --blue:     #6B9FE4;
-  --blue-d:   #0E1B2E;
-  --t1:       #DDE8E2;
-  --t2:       #7A9B8A;
-  --t3:       #3E5A4A;
-  --border:   #1F3028;
+  --warm-d:   #200F09;
+  --blue:     #7EC8E3;
+  --blue-d:   #0C1D28;
+  --t1:       #D8ECF5;
+  --t2:       #7AAEBF;
+  --t3:       #3A6678;
+  --border:   #1A3448;
   --radius:   14px;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #F2F5F3; --s1: #FFFFFF; --s2: #EAF0EC; --s3: #DEE8E2;
-    --accent: #2E7A52; --accent-d: #E0F0E8;
+    --bg: #F0F7FB; --s1: #FFFFFF; --s2: #E6F3F8; --s3: #D4E9F2;
+    --accent: #2878A0; --accent-d: #D0E8F5;
     --warm: #C4613A; --warm-d: #FAE8E2;
-    --blue: #3A6FC0; --blue-d: #E2ECF8;
-    --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
+    --blue: #3A7FA0; --blue-d: #DFF0F5;
+    --t1: #091922; --t2: #3A6880; --t3: #8AB0C5; --border: #BDD4E0;
   }
 }
 :root[data-theme="light"] {
-  --bg: #F2F5F3; --s1: #FFFFFF; --s2: #EAF0EC; --s3: #DEE8E2;
-  --accent: #2E7A52; --accent-d: #E0F0E8;
+  --bg: #F0F7FB; --s1: #FFFFFF; --s2: #E6F3F8; --s3: #D4E9F2;
+  --accent: #2878A0; --accent-d: #D0E8F5;
   --warm: #C4613A; --warm-d: #FAE8E2;
-  --blue: #3A6FC0; --blue-d: #E2ECF8;
-  --t1: #0F1C14; --t2: #4A6A58; --t3: #9AB8A8; --border: #D0DDD6;
+  --blue: #3A7FA0; --blue-d: #DFF0F5;
+  --t1: #091922; --t2: #3A6880; --t3: #8AB0C5; --border: #BDD4E0;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -155,6 +155,16 @@ body {
 .wx-city-btn:hover { opacity: .85; }
 
 /* ── Map ─────────────────────────────────────────────────── */
+.map-tabs { display: flex; gap: 4px; }
+.map-tab {
+  padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--s2); color: var(--t2);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+.map-tab.active { background: var(--accent-d); border-color: var(--accent); color: var(--accent); }
+.map-tab:hover:not(.active) { border-color: var(--t3); color: var(--t1); }
+
 .map-iframe {
   width: 100%; height: 300px; border: none;
   border-radius: 9px; display: block;
@@ -175,43 +185,59 @@ body {
   white-space: nowrap;
 }
 .map-search-btn:hover { opacity: .85; }
+.map-footer-row {
+  display: flex; justify-content: space-between; align-items: center; margin-top: 8px;
+}
+.map-reset-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 11.5px; color: var(--t3); padding: 0;
+  font-family: 'Outfit', sans-serif; transition: color .15s;
+}
+.map-reset-btn:hover { color: var(--t2); }
 .map-open-link {
-  display: block; margin-top: 8px;
-  font-size: 11.5px; color: var(--blue); text-decoration: none; text-align: right;
+  font-size: 11.5px; color: var(--blue); text-decoration: none;
 }
 .map-open-link:hover { text-decoration: underline; }
+.mymaps-embed {
+  width: 100%; height: 320px; border: none;
+  border-radius: 9px; display: block;
+}
+.mymaps-footer {
+  display: flex; justify-content: space-between; align-items: center; margin-top: 8px;
+}
 
-/* ── Calendar ─────────────────────────────────────────────────── */
+/* ── Calendar + My Maps setup (shared) ──────────────────────── */
 .cal-embed {
   width: 100%; border: none; border-radius: 9px;
   min-height: 400px; background: var(--s2);
 }
-.cal-setup {
+.setup-box {
   padding: 20px 0; display: flex; flex-direction: column;
   align-items: center; text-align: center; gap: 10px;
 }
-.cal-setup-icon { font-size: 32px; }
-.cal-setup-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--t1); }
-.cal-setup-desc { font-size: 12px; color: var(--t2); line-height: 1.6; max-width: 300px; }
-.cal-url-form { display: flex; gap: 6px; width: 100%; }
-.cal-url-input {
+.setup-icon  { font-size: 32px; }
+.setup-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--t1); }
+.setup-desc  { font-size: 12px; color: var(--t2); line-height: 1.6; max-width: 300px; }
+.setup-form  { display: flex; gap: 6px; width: 100%; }
+.setup-input {
   flex: 1; background: var(--s2); border: 1px solid var(--border);
   border-radius: 8px; padding: 8px 11px;
   font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
 }
-.cal-url-input:focus { outline: none; border-color: var(--accent); }
-.cal-url-btn {
+.setup-input:focus { outline: none; border-color: var(--accent); }
+.setup-btn {
   padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff;
   border: none; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif;
 }
-.cal-url-btn:hover { opacity: .85; }
-.cal-help-link { font-size: 11px; color: var(--blue); text-decoration: none; }
-.cal-help-link:hover { text-decoration: underline; }
-.cal-change-btn {
+.setup-btn:hover { opacity: .85; }
+.help-link { font-size: 11px; color: var(--blue); text-decoration: none; }
+.help-link:hover { text-decoration: underline; }
+.change-btn {
   background: none; border: none; cursor: pointer;
   font-size: 12px; color: var(--t3); padding: 0; transition: color .15s;
+  font-family: 'Outfit', sans-serif;
 }
-.cal-change-btn:hover { color: var(--warm); }
+.change-btn:hover { color: var(--warm); }
 
 /* ── Jobs ─────────────────────────────────────────────────── */
 .jobs-filter-row {
@@ -240,14 +266,15 @@ body {
 .job-company {
   font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
   padding: 2px 7px; border-radius: 20px;
+  background: var(--s3); color: var(--t2);
 }
 .job-location { font-size: 11px; color: var(--t2); }
 .job-dept     { font-size: 11px; color: var(--t3); }
 .jobs-loading { padding: 20px 0; text-align: center; font-size: 13px; color: var(--t2); }
-.jobs-empty   { padding: 12px 0; font-size: 13px; color: var(--t3); }
-.jobs-search-row { display: flex; gap: 6px; margin-bottom: 12px; }
+.jobs-empty   { padding: 12px 0; font-size: 13px; color: var(--t3); line-height: 1.6; }
+.jobs-search-row { margin-bottom: 12px; }
 .jobs-search-inp {
-  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
   border-radius: 8px; padding: 7px 10px;
   font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
 }
@@ -256,7 +283,7 @@ body {
 
 /* ── Settings modal ─────────────────────────────────────────── */
 .modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
   z-index: 200; display: none; align-items: center; justify-content: center;
   opacity: 0; transition: opacity .2s;
 }
@@ -332,22 +359,30 @@ body {
     <div class="card">
       <div class="card-header">
         <span class="card-title">Map</span>
-        <button class="card-action" id="btn-map-reset" title="Reset to Amsterdam" style="font-size:12px;font-family:'Outfit',sans-serif;letter-spacing:.04em">Amsterdam</button>
+        <div class="map-tabs" id="map-tabs">
+          <button class="map-tab active" data-tab="map">Map</button>
+          <button class="map-tab" data-tab="mymaps">My Places</button>
+        </div>
       </div>
       <div class="card-body" style="padding-bottom:16px">
-        <iframe
-          id="map-iframe"
-          class="map-iframe"
-          src="https://maps.google.com/maps?q=Amsterdam,Netherlands&z=13&output=embed"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-        <div class="map-search-row">
-          <input class="map-search-input" id="map-search-inp" placeholder="Search a place…" type="text">
-          <button class="map-search-btn" id="btn-map-search">Search</button>
+        <!-- Standard map -->
+        <div id="map-tab-map">
+          <iframe
+            id="map-iframe" class="map-iframe"
+            src="https://maps.google.com/maps?q=Amsterdam,Netherlands&z=13&output=embed"
+            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+          <div class="map-search-row">
+            <input class="map-search-input" id="map-search-inp" placeholder="Search a place…" type="text">
+            <button class="map-search-btn" id="btn-map-search">Search</button>
+          </div>
+          <div class="map-footer-row">
+            <button class="map-reset-btn" id="btn-map-reset">Reset to Amsterdam</button>
+            <a class="map-open-link" id="map-open-link" href="https://maps.google.com" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+          </div>
         </div>
-        <a class="map-open-link" id="map-open-link" href="https://maps.google.com" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+        <!-- My Places -->
+        <div id="map-tab-mymaps" hidden></div>
       </div>
     </div>
 
@@ -360,20 +395,22 @@ body {
     <div class="card">
       <div class="card-header">
         <span class="card-title">Google Calendar</span>
-        <button class="card-action cal-change-btn" id="btn-cal-change" title="Change embed URL" style="font-size:12px;display:none">Change URL</button>
+        <button class="change-btn card-action" id="btn-cal-change" style="display:none">Change URL</button>
       </div>
       <div class="card-body" id="cal-body"></div>
     </div>
 
-    <!-- Jobs -->
+    <!-- Vacancies -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Vacancies</span>
+        <span class="card-title">Amsterdam Vacancies</span>
         <button class="card-action" id="btn-refresh-jobs" title="Refresh">↻</button>
       </div>
       <div class="card-body">
         <div class="jobs-filter-row" id="jobs-chips"></div>
-        <input class="jobs-search-inp" id="jobs-search" placeholder="Filter by keyword…" type="text">
+        <div class="jobs-search-row">
+          <input class="jobs-search-inp" id="jobs-search" placeholder="Filter by keyword…" type="text">
+        </div>
         <div class="jobs-count" id="jobs-count"></div>
         <div id="jobs-body"><div class="jobs-loading">Loading vacancies…</div></div>
       </div>
@@ -407,9 +444,9 @@ const DEFAULTS = {
   name:        'Chris',
   city:        'Amsterdam',
   calendarUrl: '',
+  myMapsUrl:   '',
 };
 
-// ── Load / persist state via localStorage ──────────────────────
 function loadState() {
   try {
     const saved = localStorage.getItem('dash-state');
@@ -417,11 +454,9 @@ function loadState() {
   } catch {}
   return { ...DEFAULTS };
 }
-
 function saveState() {
   try { localStorage.setItem('dash-state', JSON.stringify(state)); } catch {}
 }
-
 const state = loadState();
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -445,22 +480,78 @@ setInterval(updateClock, 1000); updateClock();
 
 // ── Map ────────────────────────────────────────────────────────
 const MAP_DEFAULT_QUERY = 'Amsterdam,Netherlands';
-const MAP_DEFAULT = `https://maps.google.com/maps?q=${encodeURIComponent(MAP_DEFAULT_QUERY)}&z=13&output=embed`;
+const MAP_DEFAULT_SRC   = `https://maps.google.com/maps?q=${encodeURIComponent(MAP_DEFAULT_QUERY)}&z=13&output=embed`;
 
 function updateMapLink(query) {
   const link = document.getElementById('map-open-link');
   if (link) link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
-
 function showOnMap(location, zoom) {
   if (!location) return;
-  const z = zoom || 15;
   const iframe = document.getElementById('map-iframe');
   if (!iframe) return;
-  iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(location)}&z=${z}&output=embed`;
+  iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(location)}&z=${zoom||15}&output=embed`;
   updateMapLink(location);
 }
 window.showOnMap = showOnMap;
+
+// ── My Maps ─────────────────────────────────────────────────────
+function renderMyMaps() {
+  const el = document.getElementById('map-tab-mymaps');
+  if (!el) return;
+  if (state.myMapsUrl) {
+    el.innerHTML = `
+      <iframe class="mymaps-embed" src="${esc(state.myMapsUrl)}"
+        allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="mymaps-footer">
+        <span style="font-size:11px;color:var(--t3)">Your Google My Maps</span>
+        <button id="btn-mymaps-change" class="change-btn">Change</button>
+      </div>`;
+    document.getElementById('btn-mymaps-change')?.addEventListener('click', () => {
+      state.myMapsUrl = '';
+      saveState();
+      renderMyMaps();
+    });
+  } else {
+    el.innerHTML = `
+      <div class="setup-box">
+        <div class="setup-icon">🗺️</div>
+        <div class="setup-title">Connect your Google My Maps</div>
+        <div class="setup-desc">
+          Go to <strong>mymaps.google.com</strong>, open your map with saved places &amp; routes,
+          click <strong>Share → Embed on my site</strong>, copy the iframe <strong>src</strong> URL and paste it below.
+        </div>
+        <div class="setup-form">
+          <input class="setup-input" id="mymaps-url-inp" placeholder="https://www.google.com/maps/d/embed?mid=…" type="url">
+          <button class="setup-btn" id="mymaps-url-btn">Connect</button>
+        </div>
+        <a class="help-link" href="https://mymaps.google.com" target="_blank" rel="noopener">Open Google My Maps ↗</a>
+      </div>`;
+    const connectBtn = document.getElementById('mymaps-url-btn');
+    connectBtn?.addEventListener('click', () => {
+      const url = document.getElementById('mymaps-url-inp')?.value.trim();
+      if (!url) return;
+      state.myMapsUrl = url;
+      saveState();
+      renderMyMaps();
+    });
+    document.getElementById('mymaps-url-inp')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') connectBtn?.click();
+    });
+  }
+}
+
+function initMapTabs() {
+  document.getElementById('map-tabs')?.addEventListener('click', e => {
+    const tab = e.target.closest('.map-tab');
+    if (!tab) return;
+    const which = tab.dataset.tab;
+    document.querySelectorAll('.map-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === which));
+    document.getElementById('map-tab-map').hidden    = (which !== 'map');
+    document.getElementById('map-tab-mymaps').hidden = (which !== 'mymaps');
+    if (which === 'mymaps') renderMyMaps();
+  });
+}
 
 // ── Weather ────────────────────────────────────────────────────
 const WMO = {
@@ -566,44 +657,69 @@ async function loadWeather() {
 
 // ── Jobs / Vacancies ───────────────────────────────────────────
 const JOB_COMPANIES = [
-  { name: 'All',         color: '#5AAF80', slug: null },
-  { name: 'Adyen',       color: '#0ABF53', lever: 'adyen',       url: 'https://careers.adyen.com' },
-  { name: 'Booking.com', color: '#003B95', greenhouse: 'bookingcom', url: 'https://jobs.booking.com' },
-  { name: 'Mollie',      color: '#FF6640', lever: 'mollie',      url: 'https://www.mollie.com/en/jobs' },
-  { name: 'Stripe',      color: '#635BFF', greenhouse: 'stripe', url: 'https://stripe.com/jobs' },
-  { name: 'ASML',        color: '#00A0E3', greenhouse: 'asml',   url: 'https://www.asml.com/en/careers' },
-  { name: 'Picnic',      color: '#7CB925', lever: 'picnic',      url: 'https://picnic.app/nl/over-ons/vacatures/' },
+  { name: 'All' },
+  { name: 'Adyen',       greenhouse: 'adyen',          url: 'https://careers.adyen.com' },
+  { name: 'Booking.com', greenhouse: 'booking',        url: 'https://jobs.booking.com' },
+  { name: 'Stripe',      greenhouse: 'stripe',         url: 'https://stripe.com/jobs' },
+  { name: 'Mollie',      greenhouse: 'mollie',         url: 'https://www.mollie.com/en/jobs' },
+  { name: 'ABN AMRO',    smartrecruiters: 'ABNAMROBank', url: 'https://werkenbij.abnamro.nl' },
+  { name: 'Rabobank',    smartrecruiters: 'Rabobank',  url: 'https://www.rabobank.com/en/careers' },
+  { name: 'ASML',        greenhouse: 'asml',           url: 'https://www.asml.com/en/careers' },
+  { name: 'Picnic',      lever: 'picnic',              url: 'https://picnic.app/nl/over-ons/vacatures/' },
 ];
 
 let allJobs = [];
 let activeCompany = 'All';
 
+const isAmsterdam = loc => /amsterdam/i.test(loc);
+
 async function fetchGreenhouse(slug) {
   try {
-    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) throw new Error();
+    const res = await fetch(
+      `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
     return (data.jobs || []).map(j => ({
       title:    j.title,
       url:      j.absolute_url,
-      location: (j.location?.name || ''),
-      dept:     (j.departments?.[0]?.name || ''),
-      company:  slug,
+      location: j.location?.name || '',
+      dept:     j.departments?.[0]?.name || '',
     }));
   } catch { return []; }
 }
 
 async function fetchLever(slug) {
   try {
-    const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) throw new Error();
+    const res = await fetch(
+      `https://api.lever.co/v0/postings/${slug}?mode=json`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
     return (Array.isArray(data) ? data : []).map(j => ({
       title:    j.text,
       url:      j.hostedUrl,
       location: j.categories?.location || j.workplaceType || '',
       dept:     j.categories?.team || j.categories?.department || '',
-      company:  slug,
+    }));
+  } catch { return []; }
+}
+
+async function fetchSmartRecruiters(slug) {
+  try {
+    const res = await fetch(
+      `https://api.smartrecruiters.com/v1/companies/${slug}/postings?offset=0&limit=200`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    if (!res.ok) throw new Error(`${res.status}`);
+    const data = await res.json();
+    return (data.content || []).map(j => ({
+      title:    j.name,
+      url:      j.ref || `https://jobs.smartrecruiters.com/${slug}`,
+      location: [j.location?.city, j.location?.country].filter(Boolean).join(', '),
+      dept:     j.department?.label || '',
     }));
   } catch { return []; }
 }
@@ -612,11 +728,20 @@ async function loadJobs() {
   document.getElementById('jobs-body').innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
   document.getElementById('jobs-count').textContent = '';
 
-  const fetches = JOB_COMPANIES.filter(c => c.slug !== null).map(c => {
-    if (c.greenhouse) return fetchGreenhouse(c.greenhouse).then(jobs => jobs.map(j => ({ ...j, company: c.name, companyColor: c.color, companyUrl: c.url })));
-    if (c.lever)      return fetchLever(c.lever).then(jobs =>      jobs.map(j => ({ ...j, company: c.name, companyColor: c.color, companyUrl: c.url })));
-    return Promise.resolve([]);
-  });
+  const fetches = JOB_COMPANIES
+    .filter(c => c.name !== 'All')
+    .map(c => {
+      let fetcher;
+      if (c.greenhouse)      fetcher = fetchGreenhouse(c.greenhouse);
+      else if (c.lever)      fetcher = fetchLever(c.lever);
+      else if (c.smartrecruiters) fetcher = fetchSmartRecruiters(c.smartrecruiters);
+      else return Promise.resolve([]);
+      return fetcher.then(jobs => jobs.map(j => ({
+        ...j,
+        company:    c.name,
+        companyUrl: c.url,
+      })));
+    });
 
   const results = await Promise.all(fetches);
   allJobs = results.flat();
@@ -624,8 +749,12 @@ async function loadJobs() {
 }
 
 function renderJobs() {
-  const searchQ   = (document.getElementById('jobs-search')?.value || '').toLowerCase().trim();
-  const filtered  = allJobs.filter(j => {
+  const searchQ = (document.getElementById('jobs-search')?.value || '').toLowerCase().trim();
+
+  // Strict Amsterdam filter — always on
+  const amsterdamJobs = allJobs.filter(j => isAmsterdam(j.location));
+
+  const filtered = amsterdamJobs.filter(j => {
     const matchCompany = activeCompany === 'All' || j.company === activeCompany;
     const matchSearch  = !searchQ ||
       j.title.toLowerCase().includes(searchQ) ||
@@ -634,29 +763,39 @@ function renderJobs() {
     return matchCompany && matchSearch;
   });
 
-  // Sort: Amsterdam/Netherlands first
-  filtered.sort((a, b) => {
-    const aAms = /amsterdam|netherlands|nl\b/i.test(a.location) ? 0 : 1;
-    const bAms = /amsterdam|netherlands|nl\b/i.test(b.location) ? 0 : 1;
-    return aAms - bAms;
-  });
-
-  const shown = filtered.slice(0, 20);
   const countEl = document.getElementById('jobs-count');
-  countEl.textContent = filtered.length ? `${filtered.length} open role${filtered.length!==1?'s':''}` : '';
+  countEl.textContent = filtered.length
+    ? `${filtered.length} Amsterdam role${filtered.length !== 1 ? 's' : ''}`
+    : '';
 
-  if (!shown.length) {
-    document.getElementById('jobs-body').innerHTML =
-      `<div class="jobs-empty">${allJobs.length ? 'No matches — try a different filter.' : 'Could not load vacancies. Check back later.'}</div>`;
+  if (!filtered.length) {
+    let msg;
+    if (allJobs.length === 0) {
+      msg = 'Could not load vacancies. Check back later.';
+    } else if (activeCompany !== 'All') {
+      const co = JOB_COMPANIES.find(c => c.name === activeCompany);
+      const totalForCo = allJobs.filter(j => j.company === activeCompany).length;
+      if (totalForCo > 0) {
+        msg = `No Amsterdam roles at ${esc(activeCompany)} right now.<br>
+          <a href="${esc(co?.url||'#')}" target="_blank" rel="noopener"
+             style="color:var(--accent);text-decoration:none">Browse all ${esc(activeCompany)} jobs ↗</a>`;
+      } else {
+        msg = `No results for ${esc(activeCompany)}.`;
+      }
+    } else {
+      msg = 'No Amsterdam matches for this filter.';
+    }
+    document.getElementById('jobs-body').innerHTML = `<div class="jobs-empty">${msg}</div>`;
     return;
   }
 
+  const shown = filtered.slice(0, 30);
   document.getElementById('jobs-body').innerHTML = shown.map(j => {
     const loc = j.location ? `📍 ${esc(j.location)}` : '';
     return `<div class="job-item">
       <a class="job-title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
       <div class="job-meta">
-        <span class="job-company" style="background:${j.companyColor}22;color:${j.companyColor}">${esc(j.company)}</span>
+        <span class="job-company">${esc(j.company)}</span>
         ${loc ? `<span class="job-location">${loc}</span>` : ''}
         ${j.dept ? `<span class="job-dept">${esc(j.dept)}</span>` : ''}
       </div>
@@ -667,7 +806,7 @@ function renderJobs() {
 function renderJobChips() {
   const row = document.getElementById('jobs-chips');
   row.innerHTML = JOB_COMPANIES.map(c =>
-    `<button class="jobs-chip${c.name === activeCompany ? ' active' : ''}" data-co="${c.name}">${c.name}</button>`
+    `<button class="jobs-chip${c.name === activeCompany ? ' active' : ''}" data-co="${esc(c.name)}">${esc(c.name)}</button>`
   ).join('');
   row.addEventListener('click', e => {
     const btn = e.target.closest('.jobs-chip');
@@ -680,31 +819,32 @@ function renderJobChips() {
 
 // ── Google Calendar ────────────────────────────────────────────
 function renderCalendar() {
-  const body = document.getElementById('cal-body');
+  const body      = document.getElementById('cal-body');
   const changeBtn = document.getElementById('btn-cal-change');
   if (state.calendarUrl) {
     body.innerHTML = `
       <iframe class="cal-embed" src="${esc(state.calendarUrl)}" frameborder="0" scrolling="no" allowfullscreen></iframe>
       <div style="padding-top:8px;font-size:11px;color:var(--t3)">
-        Your Google Calendar · <a class="cal-help-link" href="https://calendar.google.com" target="_blank">Open Calendar ↗</a>
+        Your Google Calendar · <a class="help-link" href="https://calendar.google.com" target="_blank">Open Calendar ↗</a>
       </div>`;
     changeBtn.style.display = 'inline-block';
   } else {
     changeBtn.style.display = 'none';
     body.innerHTML = `
-      <div class="cal-setup">
-        <div class="cal-setup-icon">📅</div>
-        <div class="cal-setup-title">Connect your Google Calendar</div>
-        <div class="cal-setup-desc">
+      <div class="setup-box">
+        <div class="setup-icon">📅</div>
+        <div class="setup-title">Connect your Google Calendar</div>
+        <div class="setup-desc">
           Open Google Calendar → Settings (⚙) → your calendar → "Integrate calendar" → copy the <strong>Embed code</strong> URL and paste it below.
         </div>
-        <div class="cal-url-form">
-          <input class="cal-url-input" id="cal-url-inp" placeholder="https://calendar.google.com/calendar/embed?src=…" type="url">
-          <button class="cal-url-btn" id="cal-url-btn">Connect</button>
+        <div class="setup-form">
+          <input class="setup-input" id="cal-url-inp" placeholder="https://calendar.google.com/calendar/embed?src=…" type="url">
+          <button class="setup-btn" id="cal-url-btn">Connect</button>
         </div>
-        <a class="cal-help-link" href="https://support.google.com/calendar/answer/41207" target="_blank" rel="noopener">How to find the embed URL ↗</a>
+        <a class="help-link" href="https://support.google.com/calendar/answer/41207" target="_blank" rel="noopener">How to find the embed URL ↗</a>
       </div>`;
-    document.getElementById('cal-url-btn').addEventListener('click', () => {
+    const btn = document.getElementById('cal-url-btn');
+    btn.addEventListener('click', () => {
       const url = document.getElementById('cal-url-inp').value.trim();
       if (!url) return;
       state.calendarUrl = url;
@@ -712,7 +852,7 @@ function renderCalendar() {
       renderCalendar();
     });
     document.getElementById('cal-url-inp').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('cal-url-btn').click();
+      if (e.key === 'Enter') btn.click();
     });
   }
 }
@@ -728,10 +868,10 @@ function openSettings() {
 function closeSettings() {
   const bd = document.getElementById('modal-backdrop');
   bd.classList.remove('open');
-  setTimeout(() => { bd.style.display='none'; }, 220);
+  setTimeout(() => { bd.style.display = 'none'; }, 220);
 }
 
-// ── Save to localStorage ───────────────────────────────────────
+// ── Save ───────────────────────────────────────────────────────
 function saveDash() {
   const btn    = document.getElementById('btn-save');
   const status = document.getElementById('save-status');
@@ -753,23 +893,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('modal-backdrop').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeSettings();
   });
-
-  document.getElementById('btn-map-reset').addEventListener('click', () => {
-    document.getElementById('map-iframe').src = MAP_DEFAULT;
-    updateMapLink(MAP_DEFAULT_QUERY);
-  });
-
-  const mapGoFn = () => {
-    const q = document.getElementById('map-search-inp').value.trim();
-    if (!q) return;
-    showOnMap(q, 14);
-    document.getElementById('map-search-inp').value = '';
-  };
-  document.getElementById('btn-map-search').addEventListener('click', mapGoFn);
-  document.getElementById('map-search-inp').addEventListener('keydown', e => {
-    if (e.key === 'Enter') mapGoFn();
-  });
-
   document.getElementById('s-save').addEventListener('click', () => {
     state.name = document.getElementById('s-name').value.trim() || state.name;
     state.city = document.getElementById('s-city').value.trim();
@@ -779,18 +902,35 @@ document.addEventListener('DOMContentLoaded', () => {
     loadWeather();
   });
 
+  // Map
+  document.getElementById('btn-map-reset').addEventListener('click', () => {
+    document.getElementById('map-iframe').src = MAP_DEFAULT_SRC;
+    updateMapLink(MAP_DEFAULT_QUERY);
+  });
+  const mapGoFn = () => {
+    const q = document.getElementById('map-search-inp').value.trim();
+    if (!q) return;
+    showOnMap(q, 14);
+    document.getElementById('map-search-inp').value = '';
+  };
+  document.getElementById('btn-map-search').addEventListener('click', mapGoFn);
+  document.getElementById('map-search-inp').addEventListener('keydown', e => { if (e.key === 'Enter') mapGoFn(); });
+  updateMapLink(MAP_DEFAULT_QUERY);
+  initMapTabs();
+
+  // Calendar
   document.getElementById('btn-cal-change').addEventListener('click', () => {
     state.calendarUrl = '';
     saveState();
     renderCalendar();
   });
 
-  document.getElementById('btn-save').addEventListener('click', saveDash);
+  // Jobs
   document.getElementById('btn-refresh-jobs').addEventListener('click', loadJobs);
   document.getElementById('jobs-search').addEventListener('input', renderJobs);
 
-  // Set initial "Open in Google Maps" link
-  updateMapLink(MAP_DEFAULT_QUERY);
+  // Save
+  document.getElementById('btn-save').addEventListener('click', saveDash);
 
   // Initial renders
   renderCalendar();
