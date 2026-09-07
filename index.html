@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chris's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap">
+
+<style>
+/* ── Tokens — Amsterdam Canal ───────────────────────────────── */
+:root {
+  --bg:       #0A1622;
+  --s1:       #111F2E;
+  --s2:       #182C3F;
+  --s3:       #1F3850;
+  --accent:   #4EA8D2;
+  --accent-d: #0D1E2E;
+  --warm:     #E07A5F;
+  --warm-d:   #200F09;
+  --blue:     #7EC8E3;
+  --blue-d:   #0C1D28;
+  --t1:       #D8ECF5;
+  --t2:       #7AAEBF;
+  --t3:       #3A6678;
+  --border:   #1A3448;
+  --radius:   14px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F0F7FB; --s1: #FFFFFF; --s2: #E6F3F8; --s3: #D4E9F2;
+    --accent: #2878A0; --accent-d: #D0E8F5;
+    --warm: #C4613A; --warm-d: #FAE8E2;
+    --blue: #3A7FA0; --blue-d: #DFF0F5;
+    --t1: #091922; --t2: #3A6880; --t3: #8AB0C5; --border: #BDD4E0;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F0F7FB; --s1: #FFFFFF; --s2: #E6F3F8; --s3: #D4E9F2;
+  --accent: #2878A0; --accent-d: #D0E8F5;
+  --warm: #C4613A; --warm-d: #FAE8E2;
+  --blue: #3A7FA0; --blue-d: #DFF0F5;
+  --t1: #091922; --t2: #3A6880; --t3: #8AB0C5; --border: #BDD4E0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg); color: var(--t1);
+  min-height: 100vh; font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.greeting-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px; font-weight: 600; color: var(--t1); line-height: 1.1;
+}
+.greeting-sub { font-size: 13px; color: var(--t2); margin-top: 2px; }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+
+.btn-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--s1);
+  color: var(--t2); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.btn-icon:hover { background: var(--s2); color: var(--t1); }
+
+.btn-save {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: opacity .15s; white-space: nowrap;
+}
+.btn-save:hover { opacity: .85; }
+.btn-save:disabled { opacity: .5; cursor: default; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 380px 1fr 300px;
+  gap: 14px;
+  padding: 14px 20px 40px;
+  align-items: start;
+}
+@media (max-width: 980px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .col-right { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .col-right { grid-column: auto; }
+}
+
+.col-left  { display: flex; flex-direction: column; gap: 14px; }
+.col-mid   { display: flex; flex-direction: column; gap: 14px; }
+.col-right { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 0; margin-bottom: 12px;
+}
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--t3);
+}
+.card-action {
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; line-height: 1; color: var(--t2);
+  transition: color .15s; padding: 0;
+}
+.card-action:hover { color: var(--accent); }
+.card-body { padding: 0 16px 16px; }
+
+/* ── Weather ─────────────────────────────────────────────────── */
+.wx-main {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.wx-temp {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px; font-weight: 700; color: var(--t1); line-height: 1;
+}
+.wx-unit { font-size: 20px; color: var(--t2); font-weight: 400; }
+.wx-icon { font-size: 40px; line-height: 1; }
+.wx-desc { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
+.wx-city { font-weight: 500; color: var(--t1); }
+.wx-forecast {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px;
+}
+.wx-day {
+  background: var(--s2); border-radius: 8px; padding: 8px 6px; text-align: center;
+}
+.wx-day-name { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--t3); margin-bottom: 4px; }
+.wx-day-icon { font-size: 20px; margin-bottom: 4px; }
+.wx-day-temps { font-size: 12px; color: var(--t2); }
+.wx-day-temps strong { color: var(--t1); font-weight: 500; }
+.wx-loading { padding: 28px 0; text-align: center; font-size: 13px; color: var(--t2); }
+.wx-error   { padding: 16px 0; text-align: center; font-size: 13px; color: var(--warm); }
+.wx-city-form { display: flex; gap: 8px; margin-top: 12px; }
+.wx-city-input {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
+}
+.wx-city-input:focus { outline: none; border-color: var(--accent); }
+.wx-city-btn {
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;
+}
+.wx-city-btn:hover { opacity: .85; }
+
+/* ── Calendar ─────────────────────────────────────────────────── */
+.cal-embed {
+  width: 100%; border: none; border-radius: 9px;
+  min-height: 400px; background: var(--s2);
+}
+.setup-box {
+  padding: 20px 0; display: flex; flex-direction: column;
+  align-items: center; text-align: center; gap: 10px;
+}
+.setup-icon  { font-size: 32px; }
+.setup-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--t1); }
+.setup-desc  { font-size: 12px; color: var(--t2); line-height: 1.6; max-width: 300px; }
+.setup-form  { display: flex; gap: 6px; width: 100%; }
+.setup-input {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 11px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
+}
+.setup-input:focus { outline: none; border-color: var(--accent); }
+.setup-btn {
+  padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff;
+  border: none; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif;
+}
+.setup-btn:hover { opacity: .85; }
+.help-link { font-size: 11px; color: var(--blue); text-decoration: none; }
+.help-link:hover { text-decoration: underline; }
+.change-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; color: var(--t3); padding: 0; transition: color .15s;
+  font-family: 'Outfit', sans-serif;
+}
+.change-btn:hover { color: var(--warm); }
+
+/* ── Jobs ─────────────────────────────────────────────────── */
+.jobs-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.jobs-chip {
+  padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--s2); color: var(--t2);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.jobs-chip.active { background: var(--accent-d); border-color: var(--accent); color: var(--accent); }
+.jobs-chip:hover:not(.active) { border-color: var(--t3); color: var(--t1); }
+.job-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.job-item:first-child { padding-top: 0; }
+.job-item:last-child  { border-bottom: none; padding-bottom: 0; }
+.job-title {
+  font-size: 13px; font-weight: 500; color: var(--t1);
+  text-decoration: none; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.job-title:hover { color: var(--accent); }
+.job-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.job-company {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
+  padding: 2px 7px; border-radius: 20px;
+  background: var(--s3); color: var(--t2);
+}
+.job-location { font-size: 11px; color: var(--t2); }
+.job-dept     { font-size: 11px; color: var(--t3); }
+.jobs-loading { padding: 20px 0; text-align: center; font-size: 13px; color: var(--t2); }
+.jobs-empty   { padding: 12px 0; font-size: 13px; color: var(--t3); line-height: 1.6; }
+.jobs-search-row { margin-bottom: 12px; }
+.jobs-search-inp {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
+}
+.jobs-search-inp:focus { outline: none; border-color: var(--accent); }
+.jobs-count { font-size: 11px; color: var(--t3); margin-bottom: 10px; }
+
+/* ── Settings modal ─────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+}
+.modal-backdrop.open { opacity: 1; }
+.modal {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--radius); width: 100%; max-width: 400px;
+  padding: 24px; transform: scale(.97);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-backdrop.open .modal { transform: scale(1); }
+.modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.settings-field { margin-bottom: 14px; }
+.settings-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--t2); margin-bottom: 6px;
+}
+.settings-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 12px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--t1);
+  -webkit-appearance: none;
+}
+.settings-input:focus { outline: none; border-color: var(--accent); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.btn { padding: 9px 18px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+.btn-primary   { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--s2); color: var(--t1); border: 1px solid var(--border); }
+.btn:hover { opacity: .85; }
+
+/* ── Misc ─────────────────────────────────────────────────── */
+.save-status { font-size: 11px; color: var(--t3); font-style: italic; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; animation: spin .7s linear infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+/* ── Jobs scroll ─────────────────────────────────────────── */
+#jobs-body { max-height: 360px; overflow-y: auto; padding-right: 2px; }
+#jobs-body::-webkit-scrollbar { width: 4px; }
+#jobs-body::-webkit-scrollbar-track { background: transparent; }
+#jobs-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.jobs-link-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 8px; }
+.jobs-ext-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--s2); color: var(--accent); font-size: 12px; font-weight: 500;
+  text-decoration: none; transition: border-color .15s, background .15s;
+}
+.jobs-ext-link:hover { border-color: var(--accent); background: var(--accent-d); }
+
+/* ── News ───────────────────────────────────────────────────── */
+.news-scroll { max-height: 340px; overflow-y: auto; padding: 0 16px 16px; }
+.news-scroll::-webkit-scrollbar { width: 4px; }
+.news-scroll::-webkit-scrollbar-track { background: transparent; }
+.news-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.news-item { padding: 9px 0; border-bottom: 1px solid var(--border); }
+.news-item:last-child { border-bottom: none; }
+.news-link { color: var(--t1); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; display: block; }
+.news-link:hover { color: var(--accent); }
+.news-meta { font-size: 11px; color: var(--t3); margin-top: 3px; }
+.news-source { font-weight: 600; color: var(--t2); }
+.news-error { color: var(--warm); font-size: 13px; padding: 12px 0; }
+
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ── -->
+<div class="topbar">
+  <div>
+    <div class="greeting-name" id="greeting-name">Good morning, Chris</div>
+    <div class="greeting-sub"  id="greeting-sub"></div>
+  </div>
+  <div class="topbar-right">
+    <span class="save-status" id="save-status"></span>
+    <button class="btn-icon" id="btn-settings" title="Settings">⚙</button>
+    <button class="btn-save" id="btn-save">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save
+    </button>
+  </div>
+</div>
+
+<!-- ── Grid ── -->
+<div class="grid">
+
+  <!-- Left column -->
+  <div class="col-left">
+
+    <!-- Weather -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="wx-card-title">Weather</span>
+        <button class="card-action" id="btn-refresh-wx" title="Refresh">↻</button>
+      </div>
+      <div id="wx-body" class="card-body">
+        <div class="wx-loading">Loading weather…</div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="card" style="overflow:hidden">
+      <div class="card-header" style="padding-bottom:0">
+        <span class="card-title">Amsterdam</span>
+        <a href="https://www.google.com/maps/@52.3676,4.9041,13z" target="_blank" rel="noopener" class="card-action" style="font-size:11.5px;color:var(--blue);text-decoration:none">Open full ↗</a>
+      </div>
+      <div style="margin-top:10px;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;height:clamp(280px,48vh,560px)">
+        <iframe
+          src="https://maps.google.com/maps?q=Amsterdam,Netherlands&t=&z=13&ie=UTF8&iwloc=&output=embed"
+          width="100%" height="100%" style="border:0;display:block" allowfullscreen loading="lazy"
+          title="Amsterdam map">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Middle column -->
+  <div class="col-mid">
+
+    <!-- Google Calendar -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Google Calendar</span>
+        <button class="change-btn card-action" id="btn-cal-change" style="display:none">Change URL</button>
+      </div>
+      <div class="card-body" id="cal-body"></div>
+    </div>
+
+    <!-- Vacancies -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Amsterdam Vacancies</span>
+        <button class="card-action" id="btn-refresh-jobs" title="Refresh">↻</button>
+      </div>
+      <div class="card-body">
+        <div class="jobs-filter-row" id="jobs-chips"></div>
+        <div class="jobs-search-row">
+          <input class="jobs-search-inp" id="jobs-search" placeholder="Filter by keyword…" type="text">
+        </div>
+        <div class="jobs-count" id="jobs-count"></div>
+        <div id="jobs-body"><div class="jobs-loading">Loading vacancies…</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right column — news -->
+  <div class="col-right">
+
+    <!-- Amsterdam nieuws -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Amsterdam nieuws</span>
+        <button class="card-action" id="btn-refresh-at5" title="Refresh">↻</button>
+      </div>
+      <div class="news-scroll" id="at5-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
+    </div>
+
+    <!-- World news -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">World news</span>
+        <button class="card-action" id="btn-refresh-hn" title="Refresh">↻</button>
+      </div>
+      <div class="news-scroll" id="hn-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Settings modal ── -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-title">Settings</div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-name">Your name</label>
+      <input class="settings-input" id="s-name" placeholder="Chris">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label" for="s-city">City (weather)</label>
+      <input class="settings-input" id="s-city" placeholder="Amsterdam">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="s-cancel">Cancel</button>
+      <button class="btn btn-primary"   id="s-save">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ───────────────────────────────────────────────────────
+const DEFAULTS = { name: 'Chris', city: 'Amsterdam', calendarUrl: '' };
+function loadState() {
+  try { const s = localStorage.getItem('dash-state'); if (s) return { ...DEFAULTS, ...JSON.parse(s) }; } catch {}
+  return { ...DEFAULTS };
+}
+function saveState() { try { localStorage.setItem('dash-state', JSON.stringify(state)); } catch {} }
+const state = loadState();
+
+// ── Helpers ────────────────────────────────────────────────────
+const esc = s => !s ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ── Clock ──────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date(), h = now.getHours();
+  document.getElementById('greeting-name').textContent = `Good ${h<12?'morning':h<17?'afternoon':'evening'}, ${state.name}`;
+  document.getElementById('greeting-sub').textContent  = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()} · ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+  document.title = `${state.name}'s Dashboard`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+
+// ── Weather ────────────────────────────────────────────────────
+const WMO = {
+  0:'☀️ Clear',1:'🌤️ Mainly clear',2:'⛅ Partly cloudy',3:'☁️ Overcast',
+  45:'🌫️ Fog',48:'🌫️ Icy fog',
+  51:'🌦️ Light drizzle',53:'🌦️ Drizzle',55:'🌧️ Heavy drizzle',
+  61:'🌧️ Light rain',63:'🌧️ Rain',65:'🌧️ Heavy rain',
+  71:'🌨️ Light snow',73:'❄️ Snow',75:'❄️ Heavy snow',77:'🌨️ Snow grains',
+  80:'🌦️ Showers',81:'🌧️ Rain showers',82:'🌧️ Heavy showers',
+  85:'🌨️ Snow showers',86:'❄️ Heavy snow showers',
+  95:'⛈️ Thunderstorm',96:'⛈️ Thunderstorm + hail',99:'⛈️ Thunderstorm + hail',
+};
+const wmoIcon = c => (WMO[c]||'🌡️ Unknown').split(' ')[0];
+const wmoDesc = c => (WMO[c]||'Unknown').split(' ').slice(1).join(' ');
+const fmtDay  = s => { const [y,m,d]=s.split('-').map(Number); return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(y,m-1,d).getDay()]; };
+
+async function fetchWeather(lat, lon, cityName) {
+  const res  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=4&wind_speed_unit=kmh`);
+  const data = await res.json();
+  const cur  = data.current, d = data.daily;
+  document.getElementById('wx-card-title').textContent = cityName + ' Weather';
+  document.getElementById('wx-body').innerHTML = `
+    <div class="wx-main">
+      <div>
+        <div class="wx-temp">${Math.round(cur.temperature_2m)}<span class="wx-unit">°C</span></div>
+        <div class="wx-desc">${wmoDesc(cur.weathercode)} · ${Math.round(cur.windspeed_10m)} km/h</div>
+        <div class="wx-desc"><span class="wx-city">${esc(cityName)}</span></div>
+      </div>
+      <div class="wx-icon">${wmoIcon(cur.weathercode)}</div>
+    </div>
+    <div class="wx-forecast">
+      ${[1,2,3].map(i=>`<div class="wx-day">
+        <div class="wx-day-name">${fmtDay(d.time[i])}</div>
+        <div class="wx-day-icon">${wmoIcon(d.weathercode[i])}</div>
+        <div class="wx-day-temps"><strong>${Math.round(d.temperature_2m_max[i])}°</strong> / ${Math.round(d.temperature_2m_min[i])}°</div>
+      </div>`).join('')}
+    </div>
+    <div class="wx-city-form">
+      <input class="wx-city-input" id="wx-city-inp" placeholder="Change city…">
+      <button class="wx-city-btn" id="wx-city-btn">Go</button>
+    </div>`;
+  bindCityBtn();
+}
+function showWxError(msg) {
+  document.getElementById('wx-body').innerHTML = `
+    <div class="wx-error">${esc(msg)}</div>
+    <div class="wx-city-form" style="margin-top:0">
+      <input class="wx-city-input" id="wx-city-inp" placeholder="Enter city…">
+      <button class="wx-city-btn" id="wx-city-btn">Go</button>
+    </div>`;
+  bindCityBtn();
+}
+function bindCityBtn() {
+  const btn = document.getElementById('wx-city-btn');
+  if (!btn) return;
+  const go = async () => {
+    const v = document.getElementById('wx-city-inp')?.value.trim();
+    if (!v) return;
+    state.city = v;
+    document.getElementById('wx-body').innerHTML = '<div class="wx-loading">Looking up…</div>';
+    try {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=1&language=en&format=json`);
+      const j = await r.json();
+      if (!j.results?.length) throw new Error();
+      const {latitude:lat,longitude:lon,name,country} = j.results[0];
+      await fetchWeather(lat, lon, name+(country?', '+country:''));
+    } catch { showWxError(`"${v}" not found — try another city name.`); }
+  };
+  btn.addEventListener('click', go);
+  document.getElementById('wx-city-inp')?.addEventListener('keydown', e => { if(e.key==='Enter') go(); });
+}
+async function loadWeather() {
+  document.getElementById('wx-body').innerHTML = '<div class="wx-loading">Loading weather…</div>';
+  if (state.city) {
+    try {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(state.city)}&count=1&language=en&format=json`);
+      const j = await r.json();
+      if (!j.results?.length) throw new Error();
+      const {latitude:lat,longitude:lon,name,country} = j.results[0];
+      await fetchWeather(lat, lon, name+(country?', '+country:'')); return;
+    } catch { showWxError(`Could not load weather for "${state.city}".`); return; }
+  }
+  if (!navigator.geolocation) { showWxError('Enter a city to see weather.'); return; }
+  navigator.geolocation.getCurrentPosition(
+    async p => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${p.coords.latitude}&lon=${p.coords.longitude}&format=json`);
+        const j = await r.json();
+        await fetchWeather(p.coords.latitude, p.coords.longitude, j.address?.city || j.address?.town || 'Your location');
+      } catch { await fetchWeather(p.coords.latitude, p.coords.longitude, 'Your location'); }
+    },
+    () => showWxError('Location denied — enter a city above.'),
+    { timeout: 8000 }
+  );
+}
+
+// ── Jobs / Vacancies ───────────────────────────────────────────
+const JOB_COMPANIES = [
+  { name: 'All' },
+  // Live Greenhouse feeds (Amsterdam-filtered)
+  { name: 'Adyen',        greenhouse: 'adyen',        url: 'https://careers.adyen.com' },
+  { name: 'Uber',         greenhouse: 'uber',          url: 'https://www.uber.com/nl/en/careers/' },
+  { name: 'Elastic',      greenhouse: 'elastic',       url: 'https://www.elastic.co/careers' },
+  { name: 'Miro',         greenhouse: 'miro',          url: 'https://miro.com/careers/' },
+  { name: 'MessageBird',  greenhouse: 'messagebird',   url: 'https://messagebird.com/careers/' },
+  { name: 'WeTransfer',   greenhouse: 'wetransfer',    url: 'https://wetransfer.com/jobs' },
+  // Direct career pages — LinkedIn search links
+  { name: 'Booking.com',  linkedin: 'Booking.com',     url: 'https://jobs.booking.com/en-us/careers' },
+  { name: 'Mollie',       linkedin: 'Mollie',           url: 'https://www.mollie.com/en/jobs' },
+  { name: 'Picnic',       linkedin: 'Picnic',           url: 'https://careers.picnic.app' },
+  { name: 'ABN AMRO',     linkedin: 'ABN AMRO',         url: 'https://werkenbij.abnamro.nl' },
+  { name: 'ASML',         linkedin: 'ASML',             url: 'https://www.asml.com/en/careers' },
+];
+let allJobs = [], activeCompany = 'All';
+// Match Amsterdam, Netherlands, or hybrid/remote NL
+const isAmsterdam = loc => !loc || /amsterdam|netherlands|nederland|nl/i.test(loc);
+
+async function fetchGreenhouse(slug) {
+  try {
+    const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (data.jobs||[]).map(j => ({ title:j.title, url:j.absolute_url, location:j.location?.name||'', dept:j.departments?.[0]?.name||'' }));
+  } catch { return []; }
+}
+async function fetchLever(slug) {
+  try {
+    const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (Array.isArray(data)?data:[]).map(j => ({ title:j.text, url:j.hostedUrl, location:j.categories?.location||j.workplaceType||'', dept:j.categories?.team||j.categories?.department||'' }));
+  } catch { return []; }
+}
+async function fetchSmartRecruiters(slug) {
+  try {
+    const res = await fetch(`https://api.smartrecruiters.com/v1/companies/${slug}/postings?offset=0&limit=200`, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (data.content||[]).map(j => ({ title:j.name, url:j.ref||`https://jobs.smartrecruiters.com/${slug}`, location:[j.location?.city,j.location?.country].filter(Boolean).join(', '), dept:j.department?.label||'' }));
+  } catch { return []; }
+}
+async function loadJobs() {
+  document.getElementById('jobs-body').innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+  document.getElementById('jobs-count').textContent = '';
+  const fetches = JOB_COMPANIES.filter(c => c.name !== 'All').map(c => {
+    let f;
+    if (c.linkedin) return Promise.resolve([]);   // LinkedIn-only: no live feed
+    if (c.greenhouse) f = fetchGreenhouse(c.greenhouse);
+    else if (c.lever) f = fetchLever(c.lever);
+    else if (c.smartrecruiters) f = fetchSmartRecruiters(c.smartrecruiters);
+    else return Promise.resolve([]);
+    return f.then(jobs => jobs.map(j => ({ ...j, company: c.name, companyUrl: c.url })));
+  });
+  allJobs = (await Promise.all(fetches)).flat();
+  renderJobs();
+}
+function renderJobs() {
+  const searchQ = (document.getElementById('jobs-search')?.value||'').toLowerCase().trim();
+  const amsterdamJobs = allJobs.filter(j => isAmsterdam(j.location));
+  const filtered = amsterdamJobs.filter(j => {
+    const matchCo = activeCompany === 'All' || j.company === activeCompany;
+    const matchQ  = !searchQ || j.title.toLowerCase().includes(searchQ) || j.dept.toLowerCase().includes(searchQ) || j.location.toLowerCase().includes(searchQ);
+    return matchCo && matchQ;
+  });
+  document.getElementById('jobs-count').textContent = filtered.length ? `${filtered.length} Amsterdam role${filtered.length!==1?'s':''}` : '';
+  if (!filtered.length) {
+    let msg;
+    if (activeCompany !== 'All') {
+      const co = JOB_COMPANIES.find(c => c.name === activeCompany);
+      if (co?.linkedin) {
+        const liUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(co.linkedin)}&location=Amsterdam%2C+Netherlands&f_TPR=r604800`;
+        msg = `<div class="jobs-empty">Live feed not available for ${esc(activeCompany)}.</div>
+          <div class="jobs-link-row">
+            <a class="jobs-ext-link" href="${esc(liUrl)}" target="_blank" rel="noopener">🔍 Search on LinkedIn ↗</a>
+            <a class="jobs-ext-link" href="${esc(co.url)}" target="_blank" rel="noopener">🏢 Careers page ↗</a>
+          </div>`;
+      } else {
+        const has = allJobs.filter(j => j.company === activeCompany).length;
+        msg = has > 0
+          ? `<div class="jobs-empty">No Amsterdam roles at ${esc(activeCompany)} right now.</div>
+             <div class="jobs-link-row"><a class="jobs-ext-link" href="${esc(co?.url||'#')}" target="_blank" rel="noopener">All ${esc(activeCompany)} jobs ↗</a></div>`
+          : `<div class="jobs-empty">Could not reach ${esc(activeCompany)} API.</div>`;
+      }
+    } else if (!allJobs.length) {
+      msg = '<div class="jobs-empty">Could not load vacancies. Check back later.</div>';
+    } else {
+      msg = '<div class="jobs-empty">No matches for this filter.</div>';
+    }
+    document.getElementById('jobs-body').innerHTML = msg;
+    return;
+  }
+  document.getElementById('jobs-body').innerHTML = filtered.slice(0,30).map(j => `
+    <div class="job-item">
+      <a class="job-title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
+      <div class="job-meta">
+        <span class="job-company">${esc(j.company)}</span>
+        ${j.location ? `<span class="job-location">📍 ${esc(j.location)}</span>` : ''}
+        ${j.dept     ? `<span class="job-dept">${esc(j.dept)}</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+function renderJobChips() {
+  const row = document.getElementById('jobs-chips');
+  row.innerHTML = JOB_COMPANIES.map(c => `<button class="jobs-chip${c.name===activeCompany?' active':''}" data-co="${esc(c.name)}">${esc(c.name)}</button>`).join('');
+  row.addEventListener('click', e => {
+    const btn = e.target.closest('.jobs-chip');
+    if (!btn) return;
+    activeCompany = btn.dataset.co;
+    document.querySelectorAll('.jobs-chip').forEach(b => b.classList.toggle('active', b.dataset.co === activeCompany));
+    renderJobs();
+  });
+}
+
+
+// ── Amsterdam News (nu.nl/amsterdam → NOS fallback → AT5 fallback) ──────────
+async function loadAT5() {
+  const body = document.getElementById('at5-body');
+  body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+
+  // Helper: parse rss2json result into news items HTML
+  function renderNewsItems(items, source) {
+    return items.slice(0, 10).map(item => {
+      const ago = item.pubDate ? timeAgo(new Date(item.pubDate)) : '';
+      return `<div class="news-item">
+        <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+        <div class="news-meta">${ago ? ago + ' · ' : ''}<span class="news-source">${esc(source)}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  const FEEDS = [
+    { url: 'https://www.nu.nl/rss/amsterdam',    source: 'nu.nl' },
+    { url: 'https://feeds.nos.nl/nosnieuws',     source: 'NOS' },
+    { url: 'https://www.at5.nl/nieuws/rss',      source: 'AT5' },
+  ];
+
+  for (const feed of FEEDS) {
+    try {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
+      const res = await fetch(apiUrl, { signal: AbortSignal.timeout(9000) });
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        body.innerHTML = renderNewsItems(data.items, feed.source);
+        return;
+      }
+    } catch { /* try next */ }
+  }
+
+  body.innerHTML = `
+    <div class="news-error">Could not load Amsterdam news.</div>
+    <a href="https://www.at5.nl/nieuws" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open AT5.nl ↗</a>`;
+}
+
+// ── World News (BBC → Reuters → Guardian fallback) ───────────────
+async function loadHN() {
+  const body = document.getElementById('hn-body');
+  body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+
+  const FEEDS = [
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml',          source: 'BBC' },
+    { url: 'https://www.theguardian.com/world/rss',                 source: 'Guardian' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'NYT' },
+  ];
+
+  for (const feed of FEEDS) {
+    try {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
+      const res = await fetch(apiUrl, { signal: AbortSignal.timeout(9000) });
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        body.innerHTML = data.items.slice(0, 10).map(item => {
+          const ago = item.pubDate ? timeAgo(new Date(item.pubDate)) : '';
+          return `<div class="news-item">
+            <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+            <div class="news-meta">${ago ? ago + ' · ' : ''}<span class="news-source">${esc(feed.source)}</span></div>
+          </div>`;
+        }).join('');
+        return;
+      }
+    } catch { /* try next */ }
+  }
+
+  body.innerHTML = `
+    <div class="news-error">Could not load world news.</div>
+    <a href="https://www.bbc.com/news/world" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open BBC News ↗</a>`;
+}
+
+// ── Time helper ───────────────────────────────────────────────
+function timeAgo(date) {
+  const secs = Math.floor((Date.now() - date) / 1000);
+  if (secs < 60)   return 'just now';
+  if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs/3600)}h ago`;
+  return `${Math.floor(secs/86400)}d ago`;
+}
+
+// ── Google Calendar ────────────────────────────────────────────
+function renderCalendar() {
+  const body = document.getElementById('cal-body'), changeBtn = document.getElementById('btn-cal-change');
+  if (state.calendarUrl) {
+    body.innerHTML = `
+      <iframe class="cal-embed" src="${esc(state.calendarUrl)}" frameborder="0" scrolling="no" allowfullscreen></iframe>
+      <div style="padding-top:8px;font-size:11px;color:var(--t3)">
+        Your Google Calendar · <a class="help-link" href="https://calendar.google.com" target="_blank">Open Calendar ↗</a>
+      </div>`;
+    changeBtn.style.display = 'inline-block';
+  } else {
+    changeBtn.style.display = 'none';
+    body.innerHTML = `
+      <div class="setup-box">
+        <div class="setup-icon">📅</div>
+        <div class="setup-title">Connect your Google Calendar</div>
+        <div class="setup-desc">Open Google Calendar → Settings (⚙) → your calendar → "Integrate calendar" → copy the <strong>Embed code</strong> URL and paste it below.</div>
+        <div class="setup-form">
+          <input class="setup-input" id="cal-url-inp" placeholder="https://calendar.google.com/calendar/embed?src=…" type="url">
+          <button class="setup-btn" id="cal-url-btn">Connect</button>
+        </div>
+        <a class="help-link" href="https://support.google.com/calendar/answer/41207" target="_blank" rel="noopener">How to find the embed URL ↗</a>
+      </div>`;
+    const btn = document.getElementById('cal-url-btn');
+    btn.addEventListener('click', () => { const u = document.getElementById('cal-url-inp').value.trim(); if (!u) return; state.calendarUrl = u; saveState(); renderCalendar(); });
+    document.getElementById('cal-url-inp').addEventListener('keydown', e => { if (e.key==='Enter') btn.click(); });
+  }
+}
+
+// ── Settings ───────────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('s-name').value = state.name;
+  document.getElementById('s-city').value = state.city;
+  const bd = document.getElementById('modal-backdrop');
+  bd.style.display = 'flex'; requestAnimationFrame(() => bd.classList.add('open'));
+}
+function closeSettings() {
+  const bd = document.getElementById('modal-backdrop');
+  bd.classList.remove('open'); setTimeout(() => { bd.style.display = 'none'; }, 220);
+}
+
+// ── Save ───────────────────────────────────────────────────────
+function saveDash() {
+  const btn = document.getElementById('btn-save'), status = document.getElementById('save-status');
+  btn.disabled = true; btn.innerHTML = '<span class="spin">↻</span> Saving…';
+  saveState();
+  setTimeout(() => {
+    status.textContent = `Saved ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save`;
+  }, 400);
+}
+
+// ── Init ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Weather
+  document.getElementById('btn-refresh-wx').addEventListener('click', loadWeather);
+
+  // Calendar
+  document.getElementById('btn-cal-change').addEventListener('click', () => { state.calendarUrl = ''; saveState(); renderCalendar(); });
+
+  // Jobs
+  document.getElementById('btn-refresh-jobs').addEventListener('click', loadJobs);
+  document.getElementById('jobs-search').addEventListener('input', renderJobs);
+
+  // Settings
+  document.getElementById('btn-settings').addEventListener('click', openSettings);
+  document.getElementById('s-cancel').addEventListener('click', closeSettings);
+  document.getElementById('modal-backdrop').addEventListener('click', e => { if (e.target===e.currentTarget) closeSettings(); });
+  document.getElementById('s-save').addEventListener('click', () => {
+    state.name = document.getElementById('s-name').value.trim() || state.name;
+    state.city = document.getElementById('s-city').value.trim();
+    saveState(); closeSettings(); updateClock(); loadWeather();
+  });
+
+  // Save button
+  document.getElementById('btn-save').addEventListener('click', saveDash);
+
+  // News refresh buttons
+  document.getElementById('btn-refresh-at5').addEventListener('click', loadAT5);
+  document.getElementById('btn-refresh-hn').addEventListener('click', loadHN);
+
+  // Initial loads
+  renderCalendar();
+  renderJobChips();
+  loadWeather();
+  loadJobs();
+  loadAT5();
+  loadHN();
+});
+</script>
+</body>
+</html>
