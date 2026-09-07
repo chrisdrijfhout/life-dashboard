@@ -6,7 +6,6 @@
 <title>Chris's Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 
 <style>
 /* ── Tokens — Amsterdam Canal ───────────────────────────────── */
@@ -156,57 +155,6 @@ body {
 .wx-city-btn:hover { opacity: .85; }
 
 /* ── Map ─────────────────────────────────────────────────── */
-#leaflet-map {
-  width: 100%; height: 520px;
-  border-radius: 9px; overflow: hidden; display: block;
-}
-.map-search-row { display: flex; gap: 6px; margin-top: 10px; }
-.map-search-input {
-  flex: 1; background: var(--s2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 8px 10px;
-  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--t1);
-}
-.map-search-input:focus { outline: none; border-color: var(--accent); }
-.map-search-btn {
-  padding: 8px 13px; border-radius: 8px;
-  background: var(--accent); color: #fff; border: none;
-  font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;
-}
-.map-search-btn:hover { opacity: .85; }
-.map-footer-row {
-  display: flex; justify-content: space-between; align-items: center; margin-top: 8px;
-}
-.map-reset-btn {
-  background: none; border: none; cursor: pointer;
-  font-size: 11.5px; color: var(--t3); padding: 0;
-  font-family: 'Outfit', sans-serif; transition: color .15s;
-}
-.map-reset-btn:hover { color: var(--t2); }
-.map-open-link { font-size: 11.5px; color: var(--blue); text-decoration: none; }
-.map-open-link:hover { text-decoration: underline; }
-.map-places-btn {
-  padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 500;
-  border: 1px solid var(--border); background: var(--s2); color: var(--t2);
-  cursor: pointer; transition: all .15s; font-family: 'Outfit', sans-serif;
-}
-.map-places-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-d); }
-
-/* ── Leaflet overrides ─────────────────────────────────────── */
-.leaflet-popup-content-wrapper {
-  background: var(--s2) !important; border: 1px solid var(--border) !important;
-  border-radius: 10px !important; box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
-  color: var(--t1) !important; padding: 0 !important;
-}
-.leaflet-popup-content { margin: 12px 16px !important; font-family: 'Outfit', sans-serif !important; font-size: 13px !important; line-height: 1.5 !important; }
-.leaflet-popup-tip { background: var(--s2) !important; }
-.leaflet-popup-close-button { color: var(--t3) !important; top: 6px !important; right: 8px !important; font-size: 16px !important; }
-.leaflet-popup-close-button:hover { color: var(--t1) !important; background: none !important; }
-.leaflet-control-zoom { border: 1px solid var(--border) !important; border-radius: 8px !important; overflow: hidden; box-shadow: none !important; }
-.leaflet-control-zoom a { background: var(--s1) !important; color: var(--t2) !important; border-color: var(--border) !important; font-size: 16px !important; line-height: 26px !important; }
-.leaflet-control-zoom a:hover { background: var(--s2) !important; color: var(--t1) !important; }
-.leaflet-container { font-family: 'Outfit', sans-serif; background: #0A1622; }
-.leaflet-control-attribution { background: rgba(10,22,34,.75) !important; color: var(--t3) !important; font-size: 9px !important; }
-.leaflet-control-attribution a { color: var(--t3) !important; }
 .popup-name { font-weight: 600; color: var(--t1); margin-bottom: 3px; font-size: 13px; }
 .popup-addr { font-size: 11px; color: var(--t2); margin-bottom: 6px; line-height: 1.4; }
 .popup-link { font-size: 11.5px; color: #7EC8E3; text-decoration: none; }
@@ -328,6 +276,14 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { display: inline-block; animation: spin .7s linear infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+/* ── News ───────────────────────────────────────────────────── */
+.news-item { padding: 9px 0; border-bottom: 1px solid var(--border); }
+.news-item:last-child { border-bottom: none; }
+.news-link { color: var(--t1); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; display: block; }
+.news-link:hover { color: var(--accent); }
+.news-meta { font-size: 11px; color: var(--t3); margin-top: 3px; }
+.news-error { color: var(--warm); font-size: 13px; padding: 12px 0; }
+
 </style>
 </head>
 <body>
@@ -366,25 +322,17 @@ body {
     </div>
 
     <!-- Map -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Map</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          <button class="map-places-btn" id="btn-fit-places">📍 My Places</button>
-          <button class="map-places-btn" id="toggle-saved-btn" onclick="toggleSaved()">👁 Hide saved</button>
-          <button class="card-action" id="btn-map-reset" title="Reset">↺</button>
-        </div>
+    <div class="card" style="overflow:hidden">
+      <div class="card-header" style="padding-bottom:0">
+        <span class="card-title">Amsterdam</span>
+        <a href="https://www.google.com/maps/@52.3676,4.9041,13z" target="_blank" rel="noopener" class="card-action" style="font-size:11.5px;color:var(--blue);text-decoration:none">Open full ↗</a>
       </div>
-      <div class="card-body" style="padding-bottom:16px">
-        <div id="leaflet-map"></div>
-        <div class="map-search-row">
-          <input class="map-search-input" id="map-search-inp" placeholder="Search a place…" type="text">
-          <button class="map-search-btn" id="btn-map-search">Search</button>
-        </div>
-        <div class="map-footer-row">
-          <button class="map-reset-btn" id="btn-map-amsterdam">Reset to Amsterdam</button>
-          <a class="map-open-link" href="https://www.google.com/maps/@52.3676,4.9041,13z" target="_blank" rel="noopener" id="map-open-link">Open in Google Maps ↗</a>
-        </div>
+      <div style="margin-top:10px;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;height:clamp(420px,65vh,780px)">
+        <iframe
+          src="https://maps.google.com/maps?q=Amsterdam,Netherlands&t=&z=13&ie=UTF8&iwloc=&output=embed"
+          width="100%" height="100%" style="border:0;display:block" allowfullscreen loading="lazy"
+          title="Amsterdam map">
+        </iframe>
       </div>
     </div>
 
@@ -418,6 +366,25 @@ body {
       </div>
     </div>
 
+
+    <!-- AT5 Amsterdam News -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Amsterdam nieuws</span>
+        <button class="card-action" id="btn-refresh-at5" title="Refresh">↻</button>
+      </div>
+      <div class="card-body" id="at5-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
+    </div>
+
+    <!-- World News (HackerNews) -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">World / Tech news</span>
+        <button class="card-action" id="btn-refresh-hn" title="Refresh">↻</button>
+      </div>
+      <div class="card-body" id="hn-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -440,7 +407,6 @@ body {
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 // ── State ───────────────────────────────────────────────────────
 const DEFAULTS = { name: 'Chris', city: 'Amsterdam', calendarUrl: '' };
@@ -465,417 +431,6 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-// ── Leaflet Map ─────────────────────────────────────────────────
-const AMS = [52.3676, 4.9041];
-
-// Your saved places + home + work
-const MY_PLACES = [
-  {
-    name: 'Home', tag: '🏠 Home',
-    addr: 'Mary van der Sluisstraat 344, Amsterdam',
-    lat: 52.3741545, lng: 4.9634548,
-    color: '#4EA8D2', radius: 11, weight: 3,
-  },
-  {
-    name: 'ING Bank', tag: '🏢 Work',
-    addr: 'Bijlmerdreef 106, Amsterdam Zuidoost',
-    lat: 52.3114, lng: 4.9474,
-    color: '#E07A5F', radius: 10, weight: 3,
-    url: 'https://www.google.com/maps/place/ING+Bank/@52.3114,4.9474,17z',
-  },
-  {
-    name: 'TNO Amsterdam', tag: '📍 Saved',
-    addr: 'Radarweg 60, Amsterdam',
-    lat: 52.3910663, lng: 4.8352250,
-    color: '#7EC8E3', radius: 8, weight: 2,
-    url: 'http://maps.google.com/?cid=13845754283513546871',
-  },
-  {
-    name: 'Bean There Co.', tag: '⭐ Review',
-    addr: 'Roepie Kruizestraat 2, Amsterdam',
-    lat: 52.3736652, lng: 4.9678066,
-    color: '#F6C90E', radius: 8, weight: 2,
-    url: 'https://www.google.com/maps/place//data=!4m2!3m1!1s0x0:0x884b87587af662b1',
-  },
-,
-  {
-    name: 'Gym', tag: '💪 Gym',
-    addr: 'Piet Heinkade, Amsterdam',
-    lat: 52.3772450, lng: 4.9145888,
-    color: '#B8F5A0', radius: 10, weight: 3,
-  },
-  {
-    name: "A'DAM Tower", tag: '✨ Go here',
-    addr: 'Overhoeksplein 1, Amsterdam Noord',
-    lat: 52.3836219, lng: 4.9022479,
-    color: '#F6C90E', radius: 9, weight: 2.5,
-    url: 'https://www.google.com/maps/place/A'DAM+Lookout',
-    highlight: true,
-  },
-  {
-    name: 'Soho House Amsterdam', tag: '✨ Go here',
-    addr: 'Spuistraat 4–10, Amsterdam',
-    lat: 52.3720757, lng: 4.8892294,
-    color: '#F6C90E', radius: 9, weight: 2.5,
-    url: 'https://www.google.com/maps/place/Soho+House+Amsterdam',
-    highlight: true,
-  },
-];
-
-const SAVED_PLACES = [
-  {n:'Mediamatic',lat:52.3764703,lng:4.9132815,url:'https://www.google.com/maps/place/Mediamatic/data=!4m2!3m1!1s0x47c609eb176a4151:0xe29299a131382719'},
-  {n:'Kom Habibi',lat:52.3737777,lng:4.964138,url:'https://www.google.com/maps/place/Kom+Habibi/data=!4m2!3m1!1s0x47c6093028c76309:0x72c3a6cd73a3d18b'},
-  {n:'The Pizza Vagabond',lat:52.3698604,lng:4.9293123,url:'https://www.google.com/maps/place/The+Pizza+Vagabond/data=!4m2!3m1!1s0x47c60929a5d84791:0x59b71a036e904409'},
-  {n:'Catcha',lat:52.351715,lng:4.8567646,url:'https://www.google.com/maps/place/Catcha/data=!4m2!3m1!1s0x47c5e3002ae2e207:0x9d479015ba34abc4'},
-  {n:'Café Fest',lat:52.3596225,lng:4.9104085,url:'https://www.google.com/maps/place/Caf%C3%A9+Fest/data=!4m2!3m1!1s0x47c6099bcde41c27:0x29d6a8e49428aef3'},
-  {n:'Studio/K',lat:52.3651443,lng:4.9359029,url:'https://www.google.com/maps/place/Studio%2FK/data=!4m2!3m1!1s0x47c60912cbcbeafb:0xde0847df3a2fd771'},
-  {n:'Thull\'s Deli',lat:52.3728677,lng:4.9387564,url:'https://www.google.com/maps/place/Thull\'s+Deli/data=!4m2!3m1!1s0x47c609110064f3c3:0x1edcc577030f92fc'},
-  {n:'BIMHUIS',lat:52.3779694,lng:4.9128862,url:'https://www.google.com/maps/place/BIMHUIS/data=!4m2!3m1!1s0x47c609afa170283f:0x34801f6fc5a26785'},
-  {n:'Omelegg - de Pijp',lat:52.3517,lng:4.8915399,url:'https://www.google.com/maps/place/Omelegg+-+de+Pijp/data=!4m2!3m1!1s0x47c609f34e9b8d1b:0xfc1ad72d74e44727'},
-  {n:'Pakhuis de Zwijger',lat:52.3768571,lng:4.9220756,url:'https://www.google.com/maps/place/Pakhuis+de+Zwijger/data=!4m2!3m1!1s0x47c609a80e2c8a2f:0x2d9e404fc8f71f8d'},
-  {n:'The Gyros Lab',lat:52.355009,lng:4.8911601,url:'https://www.google.com/maps/place/The+Gyros+Lab/data=!4m2!3m1!1s0x47c60bd6cd4cf3c5:0x316ac4470500f867'},
-  {n:'Booking.com',lat:52.3760544,lng:4.9100594,url:'https://www.google.com/maps/place/Booking.com/data=!4m2!3m1!1s0x47c6099590ae1d19:0x37f9e7921bb19b73'},
-  {n:'Adyen',lat:52.3713714,lng:4.8932762,url:'https://www.google.com/maps/place/Adyen/data=!4m2!3m1!1s0x47c609c82b81e5c9:0x472758749d3606cf'},
-  {n:'Praktijk Rood',lat:52.3889796,lng:4.905471,url:'https://www.google.com/maps/place/Praktijk+Rood/data=!4m2!3m1!1s0x47c609aadc2849b1:0x3604741e7909fbd5'},
-  {n:'Duke of Tokyo',lat:52.3664942,lng:4.8906805,url:'https://www.google.com/maps/place/Duke+of+Tokyo/data=!4m2!3m1!1s0x47c609ea796159a3:0x3d0102d7e64c4c31'},
-  {n:'Aloha',lat:52.3777948,lng:4.9090747,url:'https://www.google.com/maps/place/Aloha/data=!4m2!3m1!1s0x47c609b09518b17b:0x75bfa8a5584a8290'},
-  {n:'CREA Café',lat:52.3633105,lng:4.9131125,url:'https://www.google.com/maps/place/CREA+Caf%C3%A9/data=!4m2!3m1!1s0x47c609c07b65deed:0x6086854919b830cd'},
-  {n:'Dandy Burger',lat:52.3844375,lng:4.8719254,url:'https://www.google.com/maps/place/Dandy+Burger/data=!4m2!3m1!1s0x47c609b672fdb65f:0xdf8e2eb365fcc729'},
-  {n:'Beef Chief // Transit Bar',lat:52.3844861,lng:4.9287518,url:'https://www.google.com/maps/place/Beef+Chief+%2F%2F+Transit+Bar/data=!4m2!3m1!1s0x47c609aa4e0f29df:0x39509b5ac0a0fa5d'},
-  {n:'Het Marnix',lat:52.3779402,lng:4.8782629,url:'https://www.google.com/maps/place/Het+Marnix/data=!4m2!3m1!1s0x47c609da75b4a633:0x3f0c2f89e7f00eb3'},
-  {n:'Café \'t Hooischip',lat:52.3665178,lng:4.9017535,url:'https://www.google.com/maps/place/Caf%C3%A9+\'t+Hooischip/data=!4m2!3m1!1s0x47c609bdf8eb1743:0x31da32b2075de109'},
-  {n:'Amsterdam University Library',lat:52.3682658,lng:4.8949341,url:'https://www.google.com/maps/place/Amsterdam+University+Library/data=!4m2!3m1!1s0x47c609c1e91a2a27:0x36216e405eeb19c2'},
-  {n:'IJsboutique',lat:52.3543499,lng:4.8721489,url:'https://www.google.com/maps/place/IJsboutique/data=!4m2!3m1!1s0x47c609fc62836fab:0x9587fa14ea85715a'},
-  {n:'Café Van Daele',lat:52.3724156,lng:4.8903352,url:'https://www.google.com/maps/place/Caf%C3%A9+Van+Daele/data=!4m2!3m1!1s0x47c609c6b44b874b:0x6b2a3a4011026a1'},
-  {n:'GAJA Korean BBQ & Bar Amsterdam',lat:52.3757981,lng:4.9085513,url:'https://www.google.com/maps/place/GAJA+Korean+BBQ+%26+Bar+Amsterdam/data=!4m2!3m1!1s0x47c609134f457bbf:0xc3d322892af16552'},
-  {n:'Sea Palace Restaurant',lat:52.375758,lng:4.906286,url:'https://www.google.com/maps/place/Sea+Palace+Restaurant/data=!4m2!3m1!1s0x47c609bab8c0cb1b:0x7feceaf349cce622'},
-  {n:'Bo\'s Amsterdam',lat:52.3730796,lng:4.8924534,url:'https://www.google.com/maps/place/Bo\'s+Amsterdam/data=!4m2!3m1!1s0x47c5e3da4b3ef75b:0xf280f2f82919f64'},
-  {n:'Coffee Room.',lat:52.3670458,lng:4.8711152,url:'https://www.google.com/maps/place/Coffee+Room./data=!4m2!3m1!1s0x47c609e07cd86c2d:0x9a92fb604f49b29b'},
-  {n:'OBA Oosterdok - Public Library',lat:52.3762463,lng:4.9081983,url:'https://www.google.com/maps/place/OBA+Oosterdok+-+Public+Library/data=!4m2!3m1!1s0x47c609d7c00d474f:0x6b97f693e6ecb494'},
-  {n:'Coffee Company.',lat:52.3473978,lng:4.8766692,url:'https://www.google.com/maps/place/Coffee+Company./data=!4m2!3m1!1s0x47c6096cb988e2e1:0xb7f8de1e301ddb0e'},
-  {n:'Werkplaats',lat:52.3537723,lng:4.9119,url:'https://www.google.com/maps/place/Werkplaats/data=!4m2!3m1!1s0x47c6098499100001:0xb8f2e377775f581a'},
-  {n:'Service Apotheek Zeeburgereiland',lat:52.3716327,lng:4.9679727,url:'https://www.google.com/maps/place/Service+Apotheek+Zeeburgereiland/data=!4m2!3m1!1s0x47c6093d95d3d4af:0xc8ffb443ee97a176'},
-  {n:'Freddy\'s Bar',lat:52.3675928,lng:4.8941269,url:'https://www.google.com/maps/place/Freddy\'s+Bar/data=!4m2!3m1!1s0x47c609c00ead4fc3:0xafec26501687dbed'},
-  {n:'Hiding in Plain Sight',lat:52.37171,lng:4.9076664,url:'https://www.google.com/maps/place/Hiding+in+Plain+Sight/data=!4m2!3m1!1s0x47c609bb59a2c565:0x5722f710655abf9a'},
-  {n:'Toscanini',lat:52.380166,lng:4.8852817,url:'https://www.google.com/maps/place/Toscanini/data=!4m2!3m1!1s0x47c609cfb5ead3ed:0x4da8b729126715e3'},
-  {n:'Molly\'s Arena',lat:52.3588445,lng:4.8055639,url:'https://www.google.com/maps/place/Molly\'s+Arena/data=!4m2!3m1!1s0x47c5e3306f81e27b:0x40ed146a8990a107'},
-  {n:'Kruidvat',lat:52.3572056,lng:4.9300092,url:'https://www.google.com/maps/place/Kruidvat/data=!4m2!3m1!1s0x47c609bdcd794fa1:0xd5c6774aed7bc8f7'},
-  {n:'Hannekes Boom',lat:52.3762934,lng:4.9116163,url:'https://www.google.com/maps/place/Hannekes+Boom/data=!4m2!3m1!1s0x47c609b7a75e535d:0x7c03462965f0b377'},
-  {n:'Waterkant',lat:52.3312618,lng:4.9545949,url:'https://www.google.com/maps/place/Waterkant/data=!4m2!3m1!1s0x47c609ddd2079a3b:0xc01c18b20be5452a'},
-  {n:'Satellite Sportscafé',lat:52.3640476,lng:4.8834687,url:'https://www.google.com/maps/place/Satellite+Sportscaf%C3%A9/data=!4m2!3m1!1s0x47c609e8fa3743f3:0x13a5cf8642325008'},
-  {n:'House of Watt',lat:52.3495593,lng:4.9221008,url:'https://www.google.com/maps/place/House+of+Watt/data=!4m2!3m1!1s0x47c6097932aeb08d:0xb8868af664765442'},
-  {n:'Klönneplein',lat:52.3871556,lng:4.8694334,url:'https://www.google.com/maps/place/Kl%C3%B6nneplein/data=!4m2!3m1!1s0x47c5e27fa24940c3:0x81c729e93ae1b064'},
-  {n:'Orchid House',lat:52.3619452,lng:4.9227718,url:'https://www.google.com/maps/place/Orchid+House/data=!4m2!3m1!1s0x47c609e8fa708061:0x56822b7116fab8c4'},
-  {n:'Bakery DAM',lat:52.3723651,lng:4.8908946,url:'https://www.google.com/maps/place/Bakery+DAM/data=!4m2!3m1!1s0x47c609c6cb807f73:0x76d01d455602d62d'},
-  {n:'Kloveniersburgwal 48',lat:52.3708722,lng:4.8981752,url:'https://www.google.com/maps/place/Kloveniersburgwal+48/data=!4m2!3m1!1s0x47c609bf23eb883d:0x85b29c19927c1283'},
-  {n:'Ranchi Amsterdam',lat:52.3567552,lng:4.8985566,url:'https://www.google.com/maps/place/Ranchi+Amsterdam/data=!4m2!3m1!1s0x47c5e331e58d62fd:0x4173bd9e996cc0b8'},
-  {n:'Landmarkt',lat:52.3809138,lng:4.968267,url:'https://www.google.com/maps/place/Landmarkt/data=!4m2!3m1!1s0x47c60929188ceec1:0x5dd44495cd766564'},
-  {n:'Flevoparkbad',lat:52.3642598,lng:4.9521683,url:'https://www.google.com/maps/place/Flevoparkbad/data=!4m2!3m1!1s0x47c6093f6627639d:0x5d89db0d88bb30fd'},
-  {n:'Chun Café Spuistraat',lat:52.3745231,lng:4.8902116,url:'https://www.google.com/maps/place/Chun+Caf%C3%A9+Spuistraat/data=!4m2!3m1!1s0x47c60923dc20999d:0xd21fb7a5af4fb2ec'},
-  {n:'Chun Café Berenstraat',lat:52.3704326,lng:4.8839312,url:'https://www.google.com/maps/place/Chun+Caf%C3%A9+Berenstraat/data=!4m2!3m1!1s0x47c609d0b483fc77:0x6081b2179cd48d92'},
-  {n:'Armada Music',lat:52.342136,lng:4.8433346,url:'https://www.google.com/maps/place/Armada+Music/data=!4m2!3m1!1s0x47c5e1f3ff4b5e25:0x1d9cfb87b3c8a5ec'},
-  {n:'Lawn Tennis Club Festina',lat:52.35916,lng:4.8687626,url:'https://www.google.com/maps/place/Lawn+Tennis+Club+Festina/data=!4m2!3m1!1s0x47c609e2ec78c481:0x4aeec48be74e0573'},
-  {n:'Heineken Experience',lat:52.3578404,lng:4.891784,url:'https://www.google.com/maps/place/Heineken+Experience/data=!4m2!3m1!1s0x47c609ed3c25194b:0x4fd3caab9141ac0a'},
-  {n:'Lofi',lat:52.3912546,lng:4.8242219,url:'https://www.google.com/maps/place/Lofi/data=!4m2!3m1!1s0x47c5e36dad1f0217:0x9c1bc1ce85ec7a61'},
-  {n:'BRET',lat:52.3898525,lng:4.836764,url:'https://www.google.com/maps/place/BRET/data=!4m2!3m1!1s0x47c5e258a1f89671:0xa4448bd8e27d4167'},
-  {n:'Gashouder Westergasfabriek',lat:52.3867571,lng:4.8692403,url:'https://www.google.com/maps/place/Gashouder+Westergasfabriek/data=!4m2!3m1!1s0x47c5e27faf42f56f:0x95802989d058a47b'},
-  {n:'Startup Village',lat:52.3543922,lng:4.9587564,url:'https://www.google.com/maps/place/Startup+Village/data=!4m2!3m1!1s0x47c6094f8c78f543:0xa2685989f68620e0'},
-  {n:'Fietstop',lat:52.3725233,lng:4.9387576,url:'https://www.google.com/maps/place/Fietstop/data=!4m2!3m1!1s0x47c6091100a818e1:0x239ff7502c66c2b2'},
-  {n:'Lomanstraat',lat:52.351574,lng:4.8610717,url:'https://www.google.com/maps/place/Lomanstraat/data=!4m2!3m1!1s0x47c5e2014668d927:0x3eb0a441436c3bcc'},
-  {n:'A Lab',lat:52.3841398,lng:4.9029914,url:'https://www.google.com/maps/place/A+Lab/data=!4m2!3m1!1s0x47c609b46914f76f:0x3e919fa7a986ec59'},
-  {n:'B. amsterdam padel',lat:52.3431626,lng:4.8293522,url:'https://www.google.com/maps/place/B.+amsterdam+padel/data=!4m2!3m1!1s0x47c5e1e4ad54c069:0x1bf624622bb8971a'},
-  {n:'StartDock Coworking Prins Hendrikkade',lat:52.3785239,lng:4.8962042,url:'https://www.google.com/maps/place/StartDock+Coworking+Prins+Hendrikkade/data=!4m2!3m1!1s0x47c609c4bd71f371:0x3424f7e78bcbee57'},
-  {n:'Paskamer',lat:52.3508366,lng:4.8977881,url:'https://www.google.com/maps/place/Paskamer/data=!4m2!3m1!1s0x47c6098c068f1c51:0x8704c3047808624d'},
-  {n:'Blik Amsterdam',lat:52.3663873,lng:4.8904155,url:'https://www.google.com/maps/place/Blik+Amsterdam/data=!4m2!3m1!1s0x47c6093bd5fb30f1:0x64a6bd7c709bff54'},
-  {n:'Hongdae Amsterdam',lat:52.3638537,lng:4.8848957,url:'https://www.google.com/maps/place/Hongdae+Amsterdam/data=!4m2!3m1!1s0x47c6099d8a7624a1:0x87c3b11f8e8cd454'},
-  {n:'Bar & Kitchen De Zuid',lat:52.3511266,lng:4.8895103,url:'https://www.google.com/maps/place/Bar+%26+Kitchen+De+Zuid/data=!4m2!3m1!1s0x47c6091abfafdb29:0xa6b8bc44766b1e8f'},
-  {n:'De Blaffende Vis',lat:52.3785514,lng:4.8832757,url:'https://www.google.com/maps/place/De+Blaffende+Vis/data=!4m2!3m1!1s0x47c609cfe2aebf55:0xbb20f31826e74871'},
-  {n:'Pompstation',lat:52.3357741,lng:4.8561652,url:'https://www.google.com/maps/place/Pompstation/data=!4m2!3m1!1s0x47c6090d4450b42d:0x68366ecdc8291298'},
-  {n:'Toekomstmuziek',lat:52.3966283,lng:4.8755183,url:'https://www.google.com/maps/place/Toekomstmuziek/data=!4m2!3m1!1s0x47c609d6da43b9ff:0x8fb461eea945a793'},
-  {n:'café twee prinsen',lat:52.3779136,lng:4.8864608,url:'https://www.google.com/maps/place/caf%C3%A9+twee+prinsen/data=!4m2!3m1!1s0x47c609cf8195257b:0xf7b41692c620cc5b'},
-  {n:'Noordermarkt',lat:52.3799538,lng:4.8868719,url:'https://www.google.com/maps/place/Noordermarkt/data=!4m2!3m1!1s0x47c609cf0832d9d9:0x400445bf9528634b'},
-  {n:'IZAKAYA',lat:52.3544903,lng:4.8872467,url:'https://www.google.com/maps/place/IZAKAYA/data=!4m2!3m1!1s0x47c609f2470be953:0xb5191abdbfb99dd0'},
-  {n:'Zero Zero',lat:52.3650987,lng:4.8903573,url:'https://www.google.com/maps/place/Zero+Zero/data=!4m2!3m1!1s0x47c609b80dd7890d:0x896f2638eb2459a2'},
-  {n:'Café Helmers',lat:52.3633776,lng:4.8751417,url:'https://www.google.com/maps/place/Caf%C3%A9+Helmers/data=!4m2!3m1!1s0x47c609e6b91f8f41:0xaf522b078bee2315'},
-  {n:'Lourens',lat:52.3746991,lng:4.8883271,url:'https://www.google.com/maps/place/Lourens/data=!4m2!3m1!1s0x47c609608a00a43f:0x65c41a0e68700921'},
-  {n:'Café \'t Smalle',lat:52.3767194,lng:4.8841388,url:'https://www.google.com/maps/place/Caf%C3%A9+\'t+Smalle/data=!4m2!3m1!1s0x47c609c546bbca0b:0xee30c27302d8c470'},
-  {n:'Café Restaurant Dauphine',lat:52.3483698,lng:4.9173053,url:'https://www.google.com/maps/place/Caf%C3%A9+Restaurant+Dauphine/data=!4m2!3m1!1s0x47c60981e785a321:0x96ce3588ee3172d8'},
-  {n:'Bar Guzzo',lat:52.3708862,lng:4.9163574,url:'https://www.google.com/maps/place/Bar+Guzzo/data=!4m2!3m1!1s0x47c609a14b8095ab:0x6e664887cd703e79'},
-  {n:'Café Kontakt',lat:52.3720253,lng:4.8596383,url:'https://www.google.com/maps/place/Caf%C3%A9+Kontakt/data=!4m2!3m1!1s0x47c5e273b6f00e73:0x70d2aa80c50a243f'},
-  {n:'Cafe amore',lat:52.3630532,lng:4.8266999,url:'https://www.google.com/maps/place/Cafe+amore/data=!4m2!3m1!1s0x47c5e230a32b38c5:0x5adde7b03ca47b82'},
-  {n:'Mokum Pool & Darts 🎱',lat:52.3504713,lng:4.9233396,url:'https://www.google.com/maps/place/Mokum+Pool+%26+Darts+%F0%9F%8E%B1/data=!4m2!3m1!1s0x47c609004ecf9263:0x2ff39076398a817b'},
-  {n:'The All Out Amsterdam',lat:52.3403083,lng:4.8929073,url:'https://www.google.com/maps/place/The+All+Out+Amsterdam/data=!4m2!3m1!1s0x47c60bc11ca6d5fb:0x4ae08f512667b738'},
-  {n:'Bitterzoet',lat:52.3773568,lng:4.8941422,url:'https://www.google.com/maps/place/Bitterzoet/data=!4m2!3m1!1s0x47c609c876288fb1:0xa93812835224545f'},
-  {n:'Coffeeshop The Bushdocter',lat:52.3651124,lng:4.8955556,url:'https://www.google.com/maps/place/Coffeeshop+The+Bushdocter/data=!4m2!3m1!1s0x47c609953ecdf127:0xe265951848dd7a74'},
-  {n:'Panama',lat:52.374949,lng:4.9303305,url:'https://www.google.com/maps/place/Panama/data=!4m2!3m1!1s0x47c6090f44305d21:0x9d1dbff1ba1b068a'},
-  {n:'citizenM Amsterdam Amstel',lat:52.3610179,lng:4.9063758,url:'https://www.google.com/maps/place/citizenM+Amsterdam+Amstel/data=!4m2!3m1!1s0x47c609e388de0a99:0xe70279069a8c62f1'},
-  {n:'Conscious Hotel Museum Square',lat:52.3549022,lng:4.8773412,url:'https://www.google.com/maps/place/Conscious+Hotel+Museum+Square/data=!4m2!3m1!1s0x47c609faec607045:0x1420559e7a88d184'},
-  {n:'Leonardo Hotel Amsterdam Rembrandtpark',lat:52.3681503,lng:4.8442021,url:'https://www.google.com/maps/place/Leonardo+Hotel+Amsterdam+Rembrandtpark/data=!4m2!3m1!1s0x47c609f6789af385:0x9e96dde565406259'},
-  {n:'Café Belcampo',lat:52.366818,lng:4.8688807,url:'https://www.google.com/maps/place/Caf%C3%A9+Belcampo/data=!4m2!3m1!1s0x47c609e0109f2eab:0xcaa61044e2f7012c'},
-  {n:'Volkshotel',lat:52.3537525,lng:4.9117913,url:'https://www.google.com/maps/place/Volkshotel/data=!4m2!3m1!1s0x47c609849e8c5715:0x339baae7ac77985c'},
-  {n:'Katsu Coffeeshop',lat:52.3548311,lng:4.8932887,url:'https://www.google.com/maps/place/Katsu+Coffeeshop/data=!4m2!3m1!1s0x47c6098d463fb9cd:0x726e13ad35601d07'},
-  {n:'Boerejongens',lat:52.364853,lng:4.8980251,url:'https://www.google.com/maps/place/Boerejongens/data=!4m2!3m1!1s0x47c60995a41ccb1b:0x3e494b0a0223c7e1'},
-  {n:'Coffeeshop Family First',lat:52.3669021,lng:4.8953903,url:'https://www.google.com/maps/place/Coffeeshop+Family+First/data=!4m2!3m1!1s0x47c609bfe2c51ecf:0xcb03d392d0eb62a5'},
-  {n:'Grey Area Coffeeshop',lat:52.3746905,lng:4.8888723,url:'https://www.google.com/maps/place/Grey+Area+Coffeeshop/data=!4m2!3m1!1s0x47c609c42c0e0073:0x2e1bd17b4e631032'},
-  {n:'Eetsalon Van Dobben',lat:52.3659821,lng:4.8950747,url:'https://www.google.com/maps/place/Eetsalon+Van+Dobben/data=!4m2!3m1!1s0x47c609955aa4b797:0xf068778667caac7a'},
-  {n:'Bouillon d\' Amsterdam',lat:52.3740513,lng:4.8907098,url:'https://www.google.com/maps/place/Bouillon+d\'+Amsterdam/data=!4m2!3m1!1s0x47c6090074e978af:0x61293530fc7c6ef'},
-  {n:'Coffee & Cakes',lat:52.3706211,lng:4.890976,url:'https://www.google.com/maps/place/Coffee+%26+Cakes/data=!4m2!3m1!1s0x47c6090f6ad29c8b:0x881f693dde2ee52d'},
-  {n:'Prins Heerlijk',lat:52.3763811,lng:4.8998301,url:'https://www.google.com/maps/place/Prins+Heerlijk/data=!4m2!3m1!1s0x47c609b9cd764f69:0x757fc3c405905ff7'},
-  {n:'Q-Factory',lat:52.3576656,lng:4.9304987,url:'https://www.google.com/maps/place/Q-Factory/data=!4m2!3m1!1s0x47c60971b2e1659b:0x18ccb72f4e2e5c2c'},
-  {n:'Blast Galaxy',lat:52.3901522,lng:4.853859,url:'https://www.google.com/maps/place/Blast+Galaxy/data=!4m2!3m1!1s0x47c60983358cb7a5:0x975e46962c809223'},
-  {n:'Sporthallen Zuid',lat:52.3399793,lng:4.854107,url:'https://www.google.com/maps/place/Sporthallen+Zuid/data=!4m2!3m1!1s0x47c5e1fbba5189a3:0x4f62cda4d2c3b922'},
-  {n:'Zero Latency VR Amsterdam',lat:52.3865224,lng:4.9234011,url:'https://www.google.com/maps/place/Zero+Latency+VR+Amsterdam/data=!4m2!3m1!1s0x47c609b641ba3f95:0x7ca3ac5d1026547f'},
-  {n:'Moco Museum | Amsterdam',lat:52.3587165,lng:4.8819619,url:'https://www.google.com/maps/place/Moco+Museum+%7C+Amsterdam/data=!4m2!3m1!1s0x47c609efa37f3c45:0x9cab82c5051ab028'},
-  {n:'Boom Chicago',lat:52.372808,lng:4.879009,url:'https://www.google.com/maps/place/Boom+Chicago/data=!4m2!3m1!1s0x47c609e85fb1205b:0x95fb816bb39c4991'},
-  {n:'FilmHallen',lat:52.3668213,lng:4.8685964,url:'https://www.google.com/maps/place/FilmHallen/data=!4m2!3m1!1s0x47c609e019783c29:0xe8649dca6e7c96f5'},
-  {n:'Bar Bukowski',lat:52.357938,lng:4.9177037,url:'https://www.google.com/maps/place/Bar+Bukowski/data=!4m2!3m1!1s0x47c6099da3d29ebb:0xf2584b47fe678132'},
-  {n:'Haarlerbergweg 13',lat:52.3027221,lng:4.9537324,url:'https://www.google.com/maps/place/Haarlerbergweg+13/data=!4m2!3m1!1s0x47c60b8307641b8b:0xb626bfb56fc8b793'},
-  {n:'Village Bagels',lat:52.3623655,lng:4.8920333,url:'https://www.google.com/maps/place/Village+Bagels/data=!4m2!3m1!1s0x47c609eb69976ddf:0x59e7cc6bf25487f4'},
-  {n:'IJland Studio',lat:52.3741927,lng:4.9355781,url:'https://www.google.com/maps/place/IJland+Studio/data=!4m2!3m1!1s0x47c6090fde4b06cd:0x181077e448b7d1a4'},
-  {n:'Sushi Fanatics',lat:52.3592855,lng:4.9137969,url:'https://www.google.com/maps/place/Sushi+Fanatics/data=!4m2!3m1!1s0x47c6098216ce98c5:0xefc32acc55229f47'},
-  {n:'TonTon Club Westergas',lat:52.3860627,lng:4.8661218,url:'https://www.google.com/maps/place/TonTon+Club+Westergas/data=!4m2!3m1!1s0x47c5e27e8db35611:0xfd166e4605877121'},
-  {n:'Casa Nostra',lat:52.3555664,lng:4.9030373,url:'https://www.google.com/maps/place/Casa+Nostra/data=!4m2!3m1!1s0x47c6098fd83fdcc1:0x9e8121f27adc0e54'},
-  {n:'Night Kitchen Amsterdam',lat:52.3610511,lng:4.8648937,url:'https://www.google.com/maps/place/Night+Kitchen+Amsterdam/data=!4m2!3m1!1s0x47c5e3d28e67c0bd:0x3d412797f32e4ac7'},
-  {n:'Assaggi',lat:52.3768248,lng:4.8819791,url:'https://www.google.com/maps/place/Assaggi/data=!4m2!3m1!1s0x47c609dab9727313:0x1e62718be4ba1b17'},
-  {n:'Zoku Amsterdam',lat:52.363941,lng:4.9067653,url:'https://www.google.com/maps/place/Zoku+Amsterdam/data=!4m2!3m1!1s0x47c609978302b283:0xed459365baf68408'},
-  {n:'Hotel & Wellness Zuiver',lat:52.3310551,lng:4.8521378,url:'https://www.google.com/maps/place/Hotel+%26+Wellness+Zuiver/data=!4m2!3m1!1s0x47c5e1e6a54db137:0x35de44a132b8138b'},
-  {n:'Ramen-Ya',lat:52.3720887,lng:4.8957213,url:'https://www.google.com/maps/place/Ramen-Ya/data=!4m2!3m1!1s0x47c609b8aadc85ef:0xf528b821a9140df6'},
-  {n:'Vatten Ramen Zeedijk',lat:52.3756794,lng:4.9005981,url:'https://www.google.com/maps/place/Vatten+Ramen+Zeedijk/data=!4m2!3m1!1s0x47c609c158eb7bf9:0xfbedbaaa3b0dd2f7'},
-  {n:'SORA Sapporo Ramen',lat:52.3526329,lng:4.8887136,url:'https://www.google.com/maps/place/SORA+Sapporo+Ramen/data=!4m2!3m1!1s0x47c609f309f976e7:0xf366b8e4c8e8f2de'},
-  {n:'Fuku Ramen',lat:52.3552228,lng:4.9257723,url:'https://www.google.com/maps/place/Fuku+Ramen/data=!4m2!3m1!1s0x47c6091c7680cf8f:0x5108cdce4ee8fba3'},
-  {n:'De Poezenboot',lat:52.3781319,lng:4.8931082,url:'https://www.google.com/maps/place/De+Poezenboot/data=!4m2!3m1!1s0x47c609c889013aad:0x22fbd4af1537b2e6'},
-  {n:'Gymshark Amsterdam',lat:52.3681958,lng:4.8913809,url:'https://www.google.com/maps/place/Gymshark+Amsterdam/data=!4m2!3m1!1s0x47c6096ed2619fc1:0xddd537d88113549c'},
-  {n:'De Hapjeshoek',lat:52.3674286,lng:4.9019825,url:'https://www.google.com/maps/place/De+Hapjeshoek/data=!4m2!3m1!1s0x47c609bde4f2f865:0x822eaddd08ff6966'},
-  {n:'Dumplings',lat:52.3854454,lng:4.880979,url:'https://www.google.com/maps/place/Dumplings/data=!4m2!3m1!1s0x47c60956a1b8c36b:0xc7134fcebd3f454c'},
-  {n:'Caldi e freddi',lat:52.3750114,lng:4.8907614,url:'https://www.google.com/maps/place/Caldi+e+freddi/data=!4m2!3m1!1s0x47c609c661ed9f85:0xb384755936324e2d'},
-  {n:'MENSPIRE BEETHOVEN Amsterdam',lat:52.3479315,lng:4.8772985,url:'https://www.google.com/maps/place/MENSPIRE+BEETHOVEN+Amsterdam/data=!4m2!3m1!1s0x47c6091260661a07:0xb2d0e404f78eeb4b'},
-  {n:'lululemon',lat:52.3662959,lng:4.886958,url:'https://www.google.com/maps/place/lululemon/data=!4m2!3m1!1s0x47c609bbe6c1faed:0x493a8c89f744f5d2'},
-  {n:'Plan B',lat:52.3610861,lng:4.8699879,url:'https://www.google.com/maps/place/Plan+B/data=!4m2!3m1!1s0x47c609e2369fde97:0x3ae5a8c5712ae9a0'},
-  {n:'Coco\'s Outback',lat:52.365493,lng:4.895531,url:'https://www.google.com/maps/place/Coco\'s+Outback/data=!4m2!3m1!1s0x47c60995412e8a25:0xaa9b15762fe6b93c'},
-  {n:'Café Noir',lat:52.3618135,lng:4.9082663,url:'https://www.google.com/maps/place/Caf%C3%A9+Noir/data=!4m2!3m1!1s0x47c60999e94291ff:0x241d84acb9f0ae'},
-  {n:'Mezrab',lat:52.3760018,lng:4.9275854,url:'https://www.google.com/maps/place/Mezrab/data=!4m2!3m1!1s0x47c60908a01b70b5:0xcbf67c0f35081681'},
-  {n:'Ceintuurbaan',lat:52.35451,lng:4.9000931,url:'https://www.google.com/maps/place/Ceintuurbaan/data=!4m2!3m1!1s0x47c6098da7abd951:0x83ccce167cf47edd'},
-  {n:'Eiburgh Snacks',lat:52.3707789,lng:4.9630011,url:'https://www.google.com/maps/place/Eiburgh+Snacks/data=!4m2!3m1!1s0x47c6092f90606085:0xcb267f6f2fec01df'},
-  {n:'The International',lat:52.3282251,lng:4.8032706,url:'https://www.google.com/maps/place/The+International/data=!4m2!3m1!1s0x47c5e174afeed8eb:0xdd407f53e6fceb0f'},
-  {n:'Golfclub Amsterdam Old Course',lat:52.3185079,lng:4.9365233,url:'https://www.google.com/maps/place/Golfclub+Amsterdam+Old+Course/data=!4m2!3m1!1s0x47c60bbf1c9ddda3:0x43bd9275cb7c4373'},
-  {n:'Café Gijs de Rooy',lat:52.3635979,lng:4.9316324,url:'https://www.google.com/maps/place/Caf%C3%A9+Gijs+de+Rooy/data=!4m2!3m1!1s0x47c60972e91d7259:0x6d79966200209447'},
-  {n:'Tigris En Eufraat',lat:52.3634582,lng:4.9326273,url:'https://www.google.com/maps/place/Tigris+En+Eufraat/data=!4m2!3m1!1s0x47c60972943c4e91:0xc1dc86a49fd76167'},
-  {n:'Focacceria',lat:52.358701,lng:4.8598029,url:'https://www.google.com/maps/place/Focacceria/data=!4m2!3m1!1s0x47c5e35a08166f23:0x9cef920f96067328'},
-  {n:'Science Park',lat:52.3549204,lng:4.9564371,url:'https://www.google.com/maps/place/Science+Park/data=!4m2!3m1!1s0x47c60944ea1b7ccb:0xdb437a0f58495ec7'},
-  {n:'Salmuera',lat:52.3732531,lng:4.8794691,url:'https://www.google.com/maps/place/Salmuera/data=!4m2!3m1!1s0x47c609db79be30f1:0x643aec143f28a425'},
-  {n:'Oriental City Amsterdam',lat:52.3718212,lng:4.8963021,url:'https://www.google.com/maps/place/Oriental+City+Amsterdam/data=!4m2!3m1!1s0x47c609bf4d61d23d:0x496a008cfd7a96eb'},
-  {n:'Mezzave',lat:52.355211,lng:4.8934108,url:'https://www.google.com/maps/place/Mezzave/data=!4m2!3m1!1s0x47c609dbba542253:0x2b8fc1b40b2faee0'},
-  {n:'Flo\'s Appetizing Amsterdam',lat:52.3615406,lng:4.8990442,url:'https://www.google.com/maps/place/Flo\'s+Appetizing+Amsterdam/data=!4m2!3m1!1s0x47c5e34c2a697ebb:0x2e90a19c8b9a33a'},
-  {n:'Singel 404',lat:52.3689187,lng:4.8874401,url:'https://www.google.com/maps/place/Singel+404/data=!4m2!3m1!1s0x47c609c23ab4d649:0xf885bce85589296b'},
-  {n:'Eetcafe Singel 404',lat:52.3689187,lng:4.8874401,url:'https://www.google.com/maps/place/Eetcafe+Singel+404/data=!4m2!3m1!1s0x47c609c2254f3d5f:0xa7f8fb08a049d4c0'},
-  {n:'Hoi Tin',lat:52.373427,lng:4.9001332,url:'https://www.google.com/maps/place/Hoi+Tin/data=!4m2!3m1!1s0x47c609b916d07845:0x627257930ab9158b'},
-  {n:'Taste of Culture',lat:52.3631049,lng:4.8851368,url:'https://www.google.com/maps/place/Taste+of+Culture/data=!4m2!3m1!1s0x47c609e91636c9cb:0x69e9f844e2178dc6'},
-  {n:'Seoul Food',lat:52.3669702,lng:4.8716759,url:'https://www.google.com/maps/place/Seoul+Food/data=!4m2!3m1!1s0x47c609e0889f1d9f:0xeb53f94e0d351c4'},
-  {n:'Restaurant Khan',lat:52.3244421,lng:4.8846818,url:'https://www.google.com/maps/place/Restaurant+Khan/data=!4m2!3m1!1s0x47c60a1532c60fad:0x2254ece47f4ea43f'},
-  {n:'Broodje Bert',lat:52.370116,lng:4.8884814,url:'https://www.google.com/maps/place/Broodje+Bert/data=!4m2!3m1!1s0x47c609c17d79d0ed:0xd53a4f35e0273722'},
-  {n:'Coba',lat:52.3849793,lng:4.9251113,url:'https://www.google.com/maps/place/Coba/data=!4m2!3m1!1s0x47c609006fcef8c5:0x5fc05490427da31d'},
-  {n:'The Butcher',lat:52.3554465,lng:4.8922631,url:'https://www.google.com/maps/place/The+Butcher/data=!4m2!3m1!1s0x47c609f2b2437783:0x13e2863b9b510e15'},
-  {n:'THE BUTCHER Social Club',lat:52.3835377,lng:4.902189,url:'https://www.google.com/maps/place/THE+BUTCHER+Social+Club/data=!4m2!3m1!1s0x47c609b46973e271:0x701b16bc4990e51c'},
-  {n:'Burgerbar Kolksteeg',lat:52.3761851,lng:4.895521,url:'https://www.google.com/maps/place/Burgerbar+Kolksteeg/data=!4m2!3m1!1s0x47c609c7f2599665:0xba3f6b7cf6fc99fa'},
-  {n:'Burger Bar',lat:52.3668547,lng:4.8940976,url:'https://www.google.com/maps/place/Burger+Bar/data=!4m2!3m1!1s0x47c609684c1791bf:0xaefe6059cd60548a'},
-  {n:'Burgerbar De Pijp',lat:52.3551021,lng:4.8931473,url:'https://www.google.com/maps/place/Burgerbar+De+Pijp/data=!4m2!3m1!1s0x47c6098d4f2c4669:0x9fe890a3649d05d9'},
-  {n:'Burger Bar',lat:52.3668547,lng:4.8940976,url:'https://www.google.com/maps/place/Burger+Bar/data=!4m2!3m1!1s0x47c609c0022dbb21:0x43f0f8c80c3e9a25'},
-  {n:'Bella Storia',lat:52.3837969,lng:4.8741388,url:'https://www.google.com/maps/place/Bella+Storia/data=!4m2!3m1!1s0x47c609d5d4ff01d5:0xbcb4f83adf7bc48f'},
-  {n:'Fuoco Vivo',lat:52.3717664,lng:4.8733584,url:'https://www.google.com/maps/place/Fuoco+Vivo/data=!4m2!3m1!1s0x47c609dec173c1dd:0x5b8bf6dc00a14d81'},
-  {n:'Margherita Tutta La Vita',lat:52.3290082,lng:4.9558358,url:'https://www.google.com/maps/place/Margherita+Tutta+La+Vita/data=!4m2!3m1!1s0x47c60bf1b6484567:0x53170a1e969cc4ca'},
-  {n:'nNea Pizza',lat:52.3694421,lng:4.8703926,url:'https://www.google.com/maps/place/nNea+Pizza/data=!4m2!3m1!1s0x47c609c16fed87ab:0x6d1b2853c3ba2733'},
-  {n:'De Kas',lat:52.3523055,lng:4.9305638,url:'https://www.google.com/maps/place/De+Kas/data=!4m2!3m1!1s0x47c6097addb6e427:0x7e1fa069538dc40e'},
-  {n:'Sham Oost',lat:52.3697596,lng:4.9368846,url:'https://www.google.com/maps/place/Sham+Oost/data=!4m2!3m1!1s0x47c60936ee83c565:0x5cfbafeba5b2edbb'},
-  {n:'BLUEY\'S Coffee & Kitchen',lat:52.3733746,lng:4.964017,url:'https://www.google.com/maps/place/BLUEY\'S+Coffee+%26+Kitchen/data=!4m2!3m1!1s0x47c60903c43a8253:0xce7fa36f50c1f1d4'},
-  {n:'KAFFEE',lat:52.3620279,lng:4.928301,url:'https://www.google.com/maps/place/KAFFEE/data=!4m2!3m1!1s0x47c609018f428bf5:0x74dd980b07386cd3'},
-  {n:'Bar Botanique',lat:52.3634486,lng:4.9303273,url:'https://www.google.com/maps/place/Bar+Botanique/data=!4m2!3m1!1s0x47c609731dc8c8c7:0x13e6f7440af77a6d'},
-  {n:'Starbucks',lat:52.3669967,lng:4.8896963,url:'https://www.google.com/maps/place/Starbucks/data=!4m2!3m1!1s0x47c6099579b193b7:0xe62351b87ab53f66'},
-  {n:'Scandinavian Embassy.',lat:52.3421122,lng:4.8932424,url:'https://www.google.com/maps/place/Scandinavian+Embassy./data=!4m2!3m1!1s0x47c6098ce2073365:0x75d2236bdea77179'},
-  {n:'Levenslang Amsterdam',lat:52.3372503,lng:4.9253277,url:'https://www.google.com/maps/place/Levenslang+Amsterdam/data=!4m2!3m1!1s0x47c60b67e7773c39:0xa2c472eb8d3b8c3a'},
-  {n:'Stadsbakkerij As',lat:52.3718172,lng:4.9311579,url:'https://www.google.com/maps/place/Stadsbakkerij+As/data=!4m2!3m1!1s0x47c60944bb556451:0xc4900d2cb8378ecc'},
-  {n:'Café "Marcella"',lat:52.3622296,lng:4.8982742,url:'https://www.google.com/maps/place/Caf%C3%A9+%22Marcella%22/data=!4m2!3m1!1s0x47c6099469502a07:0x49ae0ca65bb2c9b0'},
-  {n:'De Blauwe Engel',lat:52.3404688,lng:4.873676,url:'https://www.google.com/maps/place/De+Blauwe+Engel/data=!4m2!3m1!1s0x47c60a0486a11c03:0xb88277859d35f976'},
-  {n:'Hoppe',lat:52.3687949,lng:4.8885771,url:'https://www.google.com/maps/place/Hoppe/data=!4m2!3m1!1s0x47c609c18f18b5b7:0x99e4a8fe04c659a0'},
-  {n:'LuminAir',lat:52.3768017,lng:4.9051791,url:'https://www.google.com/maps/place/LuminAir/data=!4m2!3m1!1s0x47c609184aca7edd:0xcf07cdcdef8f9e34'},
-  {n:'SHU Amsterdam',lat:52.3680199,lng:4.8902686,url:'https://www.google.com/maps/place/SHU+Amsterdam/data=!4m2!3m1!1s0x47c60936f5d9f79f:0x758f4fd79a8abdec'},
-  {n:'tuftuf',lat:52.3680803,lng:4.8902472,url:'https://www.google.com/maps/place/tuftuf/data=!4m2!3m1!1s0x47c60997e59888ad:0xf05219aa10ab4a58'},
-  {n:'Dickys Grand Café',lat:52.3368787,lng:4.8729576,url:'https://www.google.com/maps/place/Dickys+Grand+Caf%C3%A9/data=!4m2!3m1!1s0x47c60a0574b29c93:0xac659570a1f06983'},
-  {n:'Conservatorium Hotel',lat:52.3587108,lng:4.8785502,url:'https://www.google.com/maps/place/Conservatorium+Hotel/data=!4m2!3m1!1s0x47c609e56e0e7eef:0x29786dfdb63f746'},
-  {n:'Rosewood Amsterdam',lat:52.3654297,lng:4.8833807,url:'https://www.google.com/maps/place/Rosewood+Amsterdam/data=!4m2!3m1!1s0x47c6093cedf14d85:0xd2128d24ad19f97f'},
-  {n:'Paradiso',lat:52.3621554,lng:4.8837824,url:'https://www.google.com/maps/place/Paradiso/data=!4m2!3m1!1s0x47c609e929b18c29:0x4cb23c46886d082c'},
-  {n:'Escape',lat:52.3664188,lng:4.8963193,url:'https://www.google.com/maps/place/Escape/data=!4m2!3m1!1s0x47c6099560fdb407:0x9ae95ee2ad53dbf1'},
-  {n:'De Mirandabad',lat:52.3389963,lng:4.9036682,url:'https://www.google.com/maps/place/De+Mirandabad/data=!4m2!3m1!1s0x47c60a25f227d8db:0xe3011aca3528d059'},
-  {n:'W Amsterdam',lat:52.3727483,lng:4.8898462,url:'https://www.google.com/maps/place/W+Amsterdam/data=!4m2!3m1!1s0x47c609c6afda0941:0x3941bec806a544bd'},
-  {n:'Padel NEXT',lat:52.3817412,lng:4.8592628,url:'https://www.google.com/maps/place/Padel+NEXT/data=!4m2!3m1!1s0x47c5e3bd5026c045:0xc88b80f3f151f10a'},
-  {n:'Oche',lat:52.3657595,lng:4.897748,url:'https://www.google.com/maps/place/Oche/data=!4m2!3m1!1s0x47c609f340fe14d1:0x3205c7fb8982de24'},
-  {n:'Jimmy Woo',lat:52.3647963,lng:4.8823749,url:'https://www.google.com/maps/place/Jimmy+Woo/data=!4m2!3m1!1s0x47c609e860cf72b9:0x74667f2982f85c99'},
-  {n:'RADION Amsterdam',lat:52.3456292,lng:4.8255446,url:'https://www.google.com/maps/place/RADION+Amsterdam/data=!4m2!3m1!1s0x47c5e188f5f5314b:0xd2e939b56d458171'},
-  {n:'Skatecafe',lat:52.3854206,lng:4.9255852,url:'https://www.google.com/maps/place/Skatecafe/data=!4m2!3m1!1s0x47c609001349b0d7:0x63c7b4dfed439c36'},
-  {n:'Garage Noord',lat:52.3855398,lng:4.9256868,url:'https://www.google.com/maps/place/Garage+Noord/data=!4m2!3m1!1s0x47c60900137fdc0b:0x5f257c593f7acf8e'},
-  {n:'Club NYX',lat:52.3662281,lng:4.891309,url:'https://www.google.com/maps/place/Club+NYX/data=!4m2!3m1!1s0x47c609ea87caa843:0xbbd5f545adcc1bd5'},
-  {n:'Flevopark',lat:52.3619145,lng:4.9495205,url:'https://www.google.com/maps/place/Flevopark/data=!4m2!3m1!1s0x47c6096eb505d5e5:0xba1d5744600b5458'},
-  {n:'Brouwerij \'t IJ',lat:52.3666977,lng:4.9263471,url:'https://www.google.com/maps/place/Brouwerij+\'t+IJ/data=!4m2!3m1!1s0x47c6090b41c8f893:0x77fe1349de1f4bc4'},
-  {n:'Gollem Aan Het Water',lat:52.368084,lng:4.9163971,url:'https://www.google.com/maps/place/Gollem+Aan+Het+Water/data=!4m2!3m1!1s0x47c60997112e51ef:0xc7fe26d44be4fba5'},
-  {n:'Beste Doner',lat:52.3651214,lng:4.9258167,url:'https://www.google.com/maps/place/Beste+Doner/data=!4m2!3m1!1s0x47c60974b51cb013:0xdc27758727a29b09'},
-  {n:'BAR JOOST',lat:52.3649261,lng:4.9397427,url:'https://www.google.com/maps/place/BAR+JOOST/data=!4m2!3m1!1s0x47c609134d1a4dab:0xac138548aba14a50'},
-  {n:'AH Oostelijke Handelskade',lat:52.3736613,lng:4.9383455,url:'https://www.google.com/maps/place/AH+Oostelijke+Handelskade/data=!4m2!3m1!1s0x47c60910420ea8b9:0x382cc793c96393cc'},
-  {n:'Mary van der Sluisstraat 344',lat:52.3741545,lng:4.9634548,url:'https://www.google.com/maps/place/Mary+van+der+Sluisstraat+344/data=!4m2!3m1!1s0x47c609301b100a83:0xf8455b2a229e65a9'},
-  {n:'bubbles Amsterdam',lat:52.3560894,lng:4.9916703,url:'https://www.google.com/maps/place/bubbles+Amsterdam/data=!4m2!3m1!1s0x47c609e901e50383:0xc7887d5496102feb'},
-  {n:'The Breakfast Club',lat:52.3364535,lng:4.8730278,url:'https://www.google.com/maps/place/The+Breakfast+Club/data=!4m2!3m1!1s0x47c5e20aac24d573:0xf84e86a91cd61a81'},
-  {n:'Corner Bakery',lat:52.3535376,lng:4.8403383,url:'https://www.google.com/maps/place/Corner+Bakery/data=!4m2!3m1!1s0x47c609f1be6ae049:0x74bf50f00f7fd780'},
-  {n:'Staring at Jacob',lat:52.3623344,lng:4.8618788,url:'https://www.google.com/maps/place/Staring+at+Jacob/data=!4m2!3m1!1s0x47c5e2095bfe86e3:0x69cb65178afdfe6c'},
-  {n:'Bakers & Roasters',lat:52.3573232,lng:4.8898583,url:'https://www.google.com/maps/place/Bakers+%26+Roasters/data=!4m2!3m1!1s0x47c609a39a092fe1:0x91ee4a68f52686eb'},
-  {n:'David Lloyd Amsterdam',lat:52.3576989,lng:4.8559255,url:'https://www.google.com/maps/place/David+Lloyd+Amsterdam/data=!4m2!3m1!1s0x47c5e2057cc51753:0x7b7b31253a58e9ff'},
-  {n:'Sissi\'s Amsterdam',lat:52.3448289,lng:4.8425825,url:'https://www.google.com/maps/place/Sissi\'s+Amsterdam/data=!4m2!3m1!1s0x47c5e14f4d4477ad:0x3b3aa9e57e1a9ea2'},
-  {n:'Chin Chin Club',lat:52.3727679,lng:4.8788419,url:'https://www.google.com/maps/place/Chin+Chin+Club/data=!4m2!3m1!1s0x47c609db800afcbb:0x8377c588c0b2f572'},
-  {n:'Vlaardingenlaan 158',lat:52.3477487,lng:4.8390939,url:'https://www.google.com/maps/place/Vlaardingenlaan+158/data=!4m2!3m1!1s0x47c5e1de1b382c47:0x250926ebf2a1d729'},
-  {n:'Rozengracht 117',lat:52.372808,lng:4.879009,url:'https://www.google.com/maps/place/Rozengracht+117/data=!4m2!3m1!1s0x47c609db7fe0c195:0x6bb25d92ccb08694'},
-  {n:'Qmusic Netherlands',lat:52.3264488,lng:4.9212862,url:'https://www.google.com/maps/place/Qmusic+Netherlands/data=!4m2!3m1!1s0x47c60bcdf92e57e1:0x668151316a00abc9'},
-  {n:'Madam Amsterdam',lat:52.3838539,lng:4.9020777,url:'https://www.google.com/maps/place/Madam+Amsterdam/data=!4m2!3m1!1s0x47c609e7f6af32db:0xc6e843437766ea1b'},
-  {n:'Bijlmerdreef 106',lat:52.3149341,lng:4.9504874,url:'https://www.google.com/maps/place/Bijlmerdreef+106/data=!4m2!3m1!1s0x47c60b0ebbe36983:0x2442a4de25d283c8'},
-  {n:'Accenture',lat:52.3371036,lng:4.8730903,url:'https://www.google.com/maps/place/Accenture/data=!4m2!3m1!1s0x47c60a050bd50c1d:0x719ce4f40adfccb0'},
-  {n:'Jazz Café Alto',lat:52.3635112,lng:4.8845183,url:'https://www.google.com/maps/place/Jazz+Caf%C3%A9+Alto/data=!4m2!3m1!1s0x47c609e91f2dbe69:0x11a4d96fa7d39db1'},
-  {n:'Massimo Dutti',lat:52.302766,lng:4.8619809,url:'https://www.google.com/maps/place/Massimo+Dutti/data=!4m2!3m1!1s0x47c609e5a7551da5:0xd4640c5c9644d32b'},
-  {n:'Waterstones',lat:52.3687694,lng:4.8910074,url:'https://www.google.com/maps/place/Waterstones/data=!4m2!3m1!1s0x47c609c1b1b7e019:0x6acc7918e70b5909'},
-  {n:'Bagels & Beans',lat:52.3416696,lng:4.8679945,url:'https://www.google.com/maps/place/Bagels+%26+Beans/data=!4m2!3m1!1s0x47c5e203385024c3:0xacfbc81609eb2ba7'},
-  {n:'Melkweg',lat:52.3647777,lng:4.8810734,url:'https://www.google.com/maps/place/Melkweg/data=!4m2!3m1!1s0x47c609e87ccba8a3:0x77a62d2e1fcec4e0'},
-  {n:'Leidseplein',lat:52.3639577,lng:4.882758,url:'https://www.google.com/maps/place/Leidseplein/data=!4m2!3m1!1s0x47c609e8ed4fb95b:0x9c3adc2895a57cd5'},
-  {n:'Oudebrugsteeg 9',lat:52.375356,lng:4.8971456,url:'https://www.google.com/maps/place/Oudebrugsteeg+9/data=!4m2!3m1!1s0x47c609b87a99a7af:0xdc69511ddaabb5c5'},
-  {n:'University of Amsterdam',lat:52.3681334,lng:4.8898042,url:'https://www.google.com/maps/place/University+of+Amsterdam/data=!4m2!3m1!1s0x47c60974445cf937:0xed04625b98d0e097'},
-  {n:'Bain & Company Netherlands',lat:52.3450226,lng:4.9171265,url:'https://www.google.com/maps/place/Bain+%26+Company+Netherlands/data=!4m2!3m1!1s0x47c609801157d405:0x7f44fc2cec1d7978'},
-  {n:'McKinsey & Company Netherlands',lat:52.3604963,lng:4.9029617,url:'https://www.google.com/maps/place/McKinsey+%26+Company+Netherlands/data=!4m2!3m1!1s0x47c6099128e0f767:0xeca9ae3f1dd79bd0'},
-  {n:'Soho House',lat:52.3720757,lng:4.8892294,url:'https://www.google.com/maps/place/Soho+House/data=!4m2!3m1!1s0x47c6095bc2824c97:0xe03b3c5d4069548f'}
-];
-
-let leafletMap = null;
-let savedLayer = null;
-let searchMarker = null;
-
-function initLeafletMap() {
-  leafletMap = L.map('leaflet-map', {
-    center: AMS, zoom: 12,
-    zoomControl: true,
-    attributionControl: true,
-  });
-
-  // Dark CartoDB tiles — matches the canal theme
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(leafletMap);
-
-  // Add all saved places as circle markers
-  MY_PLACES.forEach(p => {
-    const marker = L.circleMarker([p.lat, p.lng], {
-      radius:      p.radius,
-      fillColor:   p.color,
-      color:       p.color,
-      weight:      p.weight,
-      fillOpacity: 0.85,
-      opacity:     0.4,
-    }).addTo(leafletMap);
-
-    const popup = `
-      <div class="popup-tag">${p.tag}</div>
-      <div class="popup-name">${p.name}</div>
-      <div class="popup-addr">${p.addr}</div>
-      ${p.url ? `<a class="popup-link" href="${p.url}" target="_blank" rel="noopener">Open in Google Maps ↗</a>` : ''}
-    `;
-    marker.bindPopup(popup, { maxWidth: 220 });
-
-    // Outer ring for home, work, gym + pulsing for highlights
-    if (p.highlight) {
-      L.circleMarker([p.lat, p.lng], {
-        radius: p.radius + 8, fillColor: 'transparent',
-        color: p.color, weight: 2, opacity: 0.5, fillOpacity: 0, interactive: false,
-      }).addTo(leafletMap);
-    }
-    if (p.radius >= 10) {
-      L.circleMarker([p.lat, p.lng], {
-        radius: p.radius + 6,
-        fillColor: 'transparent',
-        color: p.color,
-        weight: 1.5,
-        opacity: 0.25,
-        fillOpacity: 0,
-        interactive: false,
-      }).addTo(leafletMap);
-    }
-  });
-
-  // Add all 222 saved places from Favourite places.csv as a toggleable layer
-  savedLayer = L.layerGroup();
-  SAVED_PLACES.forEach(p => {
-    const m = L.circleMarker([p.lat, p.lng], {
-      radius: 5, fillColor: '#4EA8D2', color: '#4EA8D2',
-      weight: 1.5, fillOpacity: 0.7, opacity: 0.4,
-    });
-    m.bindPopup(`
-      <div class="popup-tag">📍 Saved</div>
-      <div class="popup-name">${p.n}</div>
-      <a class="popup-link" href="${p.url}" target="_blank" rel="noopener">Open in Google Maps ↗</a>
-    `, { maxWidth: 220 });
-    savedLayer.addLayer(m);
-  });
-  savedLayer.addTo(leafletMap);
-
-  // Directions between Home and ING
-  updateDirectionsLink();
-}
-
-function updateDirectionsLink() {
-  const home = MY_PLACES[0], work = MY_PLACES[1];
-  const url = `https://www.google.com/maps/dir/${home.lat},${home.lng}/${work.lat},${work.lng}`;
-  const el = document.getElementById('map-open-link');
-  if (el) { el.href = url; el.textContent = 'Directions: Home → ING ↗'; }
-}
-
-function toggleSaved() {
-  if (!leafletMap || !savedLayer) return;
-  const btn = document.getElementById('toggle-saved-btn');
-  if (leafletMap.hasLayer(savedLayer)) {
-    leafletMap.removeLayer(savedLayer);
-    if (btn) { btn.textContent = '👁 Show saved'; btn.classList.add('btn-muted'); }
-  } else {
-    leafletMap.addLayer(savedLayer);
-    if (btn) { btn.textContent = '👁 Hide saved'; btn.classList.remove('btn-muted'); }
-  }
-}
-
-function fitToMyPlaces() {
-  if (!leafletMap) return;
-  // Fit to NL places only (exclude Barcelona for default view)
-  const nlPlaces = MY_PLACES.filter(p => p.lat > 50);
-  const bounds = L.latLngBounds(nlPlaces.map(p => [p.lat, p.lng]));
-  leafletMap.flyToBounds(bounds, { padding: [40, 40], duration: 1.2 });
-}
-
-function resetToAmsterdam() {
-  if (!leafletMap) return;
-  leafletMap.flyTo(AMS, 12, { duration: 1 });
-}
-
-async function searchOnMap(q) {
-  if (!leafletMap || !q.trim()) return;
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`);
-    const j = await r.json();
-    if (!j.length) return;
-    const { lat, lon, display_name } = j[0];
-    if (searchMarker) { leafletMap.removeLayer(searchMarker); searchMarker = null; }
-    searchMarker = L.circleMarker([+lat, +lon], {
-      radius: 9, fillColor: '#fff', color: '#4EA8D2',
-      weight: 3, fillOpacity: 1,
-    }).addTo(leafletMap).bindPopup(`
-      <div class="popup-tag">🔍 Search</div>
-      <div class="popup-name">${display_name.split(',')[0]}</div>
-      <div class="popup-addr">${display_name.split(',').slice(1,3).join(',').trim()}</div>
-      <a class="popup-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(display_name)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>
-    `, { maxWidth: 240 }).openPopup();
-    leafletMap.flyTo([+lat, +lon], 15, { duration: 1 });
-  } catch {}
-}
 
 // ── Weather ────────────────────────────────────────────────────
 const WMO = {
@@ -1075,6 +630,90 @@ function renderJobChips() {
   });
 }
 
+
+// ── AT5 Amsterdam News ────────────────────────────────────────
+async function loadAT5() {
+  const body = document.getElementById('at5-body');
+  body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+  try {
+    const rssUrl = 'https://www.at5.nl/nieuws/rss';
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=10`;
+    const res = await fetch(apiUrl, { signal: AbortSignal.timeout(10000) });
+    const data = await res.json();
+    if (data.status !== 'ok' || !data.items?.length) throw new Error('No items');
+    body.innerHTML = data.items.slice(0, 10).map(item => {
+      const ago = timeAgo(new Date(item.pubDate));
+      return `<div class="news-item">
+        <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+        <div class="news-meta">${ago} · AT5</div>
+      </div>`;
+    }).join('');
+  } catch {
+    // Try fallback: fetch AT5 RSS directly via allorigins proxy
+    try {
+      const rssUrl = encodeURIComponent('https://www.at5.nl/nieuws/rss');
+      const res2 = await fetch(`https://api.allorigins.win/get?url=${rssUrl}`, { signal: AbortSignal.timeout(8000) });
+      const { contents } = await res2.json();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(contents, 'text/xml');
+      const items = [...doc.querySelectorAll('item')].slice(0, 10);
+      if (!items.length) throw new Error();
+      document.getElementById('at5-body').innerHTML = items.map(item => {
+        const title = item.querySelector('title')?.textContent || '';
+        const link  = item.querySelector('link')?.textContent || '#';
+        const pub   = item.querySelector('pubDate')?.textContent || '';
+        const ago   = pub ? timeAgo(new Date(pub)) : '';
+        return `<div class="news-item">
+          <a class="news-link" href="${esc(link)}" target="_blank" rel="noopener">${esc(title)}</a>
+          <div class="news-meta">${esc(ago)} · AT5</div>
+        </div>`;
+      }).join('');
+    } catch {
+      document.getElementById('at5-body').innerHTML = `
+        <div class="news-error">Could not load Amsterdam news.</div>
+        <a href="https://www.at5.nl/nieuws" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none">Open AT5 nieuws ↗</a>`;
+    }
+  }
+}
+
+// ── HackerNews World/Tech News ────────────────────────────────
+async function loadHN() {
+  const body = document.getElementById('hn-body');
+  body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+  try {
+    const ids = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+    const top10 = ids.slice(0, 10);
+    const items = await Promise.all(top10.map(id =>
+      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, { signal: AbortSignal.timeout(8000) }).then(r => r.json())
+    ));
+    body.innerHTML = items.filter(Boolean).map(item => {
+      const ago   = timeAgo(new Date(item.time * 1000));
+      const link  = item.url || `https://news.ycombinator.com/item?id=${item.id}`;
+      const pts   = item.score ? `${item.score} pts · ` : '';
+      const comms = item.descendants != null ? `${item.descendants} comments · ` : '';
+      return `<div class="news-item">
+        <a class="news-link" href="${esc(link)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+        <div class="news-meta">${pts}${comms}${ago} ·
+          <a href="https://news.ycombinator.com/item?id=${item.id}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">HN</a>
+        </div>
+      </div>`;
+    }).join('');
+  } catch {
+    body.innerHTML = `
+      <div class="news-error">Could not load world news.</div>
+      <a href="https://news.ycombinator.com" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none">Open Hacker News ↗</a>`;
+  }
+}
+
+// ── Time helper ───────────────────────────────────────────────
+function timeAgo(date) {
+  const secs = Math.floor((Date.now() - date) / 1000);
+  if (secs < 60)   return 'just now';
+  if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs/3600)}h ago`;
+  return `${Math.floor(secs/86400)}d ago`;
+}
+
 // ── Google Calendar ────────────────────────────────────────────
 function renderCalendar() {
   const body = document.getElementById('cal-body'), changeBtn = document.getElementById('btn-cal-change');
@@ -1133,18 +772,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Weather
   document.getElementById('btn-refresh-wx').addEventListener('click', loadWeather);
 
-  // Map
-  initLeafletMap();
-  document.getElementById('btn-map-reset').addEventListener('click', resetToAmsterdam);
-  document.getElementById('btn-map-amsterdam').addEventListener('click', resetToAmsterdam);
-  document.getElementById('btn-fit-places').addEventListener('click', fitToMyPlaces);
-  const mapGoFn = () => {
-    const q = document.getElementById('map-search-inp').value.trim();
-    if (q) { searchOnMap(q); document.getElementById('map-search-inp').value = ''; }
-  };
-  document.getElementById('btn-map-search').addEventListener('click', mapGoFn);
-  document.getElementById('map-search-inp').addEventListener('keydown', e => { if (e.key==='Enter') mapGoFn(); });
-
   // Calendar
   document.getElementById('btn-cal-change').addEventListener('click', () => { state.calendarUrl = ''; saveState(); renderCalendar(); });
 
@@ -1165,11 +792,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Save button
   document.getElementById('btn-save').addEventListener('click', saveDash);
 
+  // News refresh buttons
+  document.getElementById('btn-refresh-at5').addEventListener('click', loadAT5);
+  document.getElementById('btn-refresh-hn').addEventListener('click', loadHN);
+
   // Initial loads
   renderCalendar();
   renderJobChips();
   loadWeather();
   loadJobs();
+  loadAT5();
+  loadHN();
 });
 </script>
 </body>
