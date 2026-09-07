@@ -472,8 +472,8 @@ const AMS = [52.3676, 4.9041];
 const MY_PLACES = [
   {
     name: 'Home', tag: '🏠 Home',
-    addr: 'Zeeburgereiland, Amsterdam',
-    lat: 52.3640, lng: 4.9490,
+    addr: 'Mary van der Sluisstraat 344, Amsterdam',
+    lat: 52.3741545, lng: 4.9634548,
     color: '#4EA8D2', radius: 11, weight: 3,
   },
   {
@@ -496,6 +496,29 @@ const MY_PLACES = [
     lat: 52.3736652, lng: 4.9678066,
     color: '#F6C90E', radius: 8, weight: 2,
     url: 'https://www.google.com/maps/place//data=!4m2!3m1!1s0x0:0x884b87587af662b1',
+  },
+,
+  {
+    name: 'Gym', tag: '💪 Gym',
+    addr: 'Piet Heinkade, Amsterdam',
+    lat: 52.3772450, lng: 4.9145888,
+    color: '#B8F5A0', radius: 10, weight: 3,
+  },
+  {
+    name: "A'DAM Tower", tag: '✨ Go here',
+    addr: 'Overhoeksplein 1, Amsterdam Noord',
+    lat: 52.3836219, lng: 4.9022479,
+    color: '#F6C90E', radius: 9, weight: 2.5,
+    url: 'https://www.google.com/maps/place/A'DAM+Lookout',
+    highlight: true,
+  },
+  {
+    name: 'Soho House Amsterdam', tag: '✨ Go here',
+    addr: 'Spuistraat 4–10, Amsterdam',
+    lat: 52.3720757, lng: 4.8892294,
+    color: '#F6C90E', radius: 9, weight: 2.5,
+    url: 'https://www.google.com/maps/place/Soho+House+Amsterdam',
+    highlight: true,
   },
 ];
 
@@ -761,7 +784,13 @@ function initLeafletMap() {
     `;
     marker.bindPopup(popup, { maxWidth: 220 });
 
-    // Also add a subtle pulsing ring for home + work
+    // Outer ring for home, work, gym + pulsing for highlights
+    if (p.highlight) {
+      L.circleMarker([p.lat, p.lng], {
+        radius: p.radius + 8, fillColor: 'transparent',
+        color: p.color, weight: 2, opacity: 0.5, fillOpacity: 0, interactive: false,
+      }).addTo(leafletMap);
+    }
     if (p.radius >= 10) {
       L.circleMarker([p.lat, p.lng], {
         radius: p.radius + 6,
@@ -946,14 +975,14 @@ async function loadWeather() {
 // ── Jobs / Vacancies ───────────────────────────────────────────
 const JOB_COMPANIES = [
   { name: 'All' },
-  { name: 'Adyen',       greenhouse: 'adyen',             url: 'https://careers.adyen.com' },
-  { name: 'Booking.com', greenhouse: 'booking',           url: 'https://jobs.booking.com' },
-  { name: 'Stripe',      greenhouse: 'stripe',            url: 'https://stripe.com/jobs' },
-  { name: 'Mollie',      greenhouse: 'mollie',            url: 'https://www.mollie.com/en/jobs' },
-  { name: 'ABN AMRO',    smartrecruiters: 'ABNAMROBank',  url: 'https://werkenbij.abnamro.nl' },
-  { name: 'Rabobank',    smartrecruiters: 'Rabobank',     url: 'https://www.rabobank.com/en/careers' },
-  { name: 'ASML',        greenhouse: 'asml',              url: 'https://www.asml.com/en/careers' },
-  { name: 'Picnic',      lever: 'picnic',                 url: 'https://picnic.app/nl/over-ons/vacatures/' },
+  { name: 'Adyen',       greenhouse: 'adyen',       url: 'https://careers.adyen.com' },
+  { name: 'Catawiki',    greenhouse: 'catawiki',    url: 'https://careers.catawiki.com' },
+  { name: 'Booking.com', directLink: true,          url: 'https://jobs.booking.com/en-us/careers' },
+  { name: 'Mollie',      directLink: true,          url: 'https://www.mollie.com/en/jobs' },
+  { name: 'ABN AMRO',    directLink: true,          url: 'https://werkenbij.abnamro.nl' },
+  { name: 'Rabobank',    directLink: true,          url: 'https://www.rabobank.com/en/careers' },
+  { name: 'ASML',        directLink: true,          url: 'https://www.asml.com/en/careers' },
+  { name: 'Picnic',      directLink: true,          url: 'https://careers.picnic.app' },
 ];
 let allJobs = [], activeCompany = 'All';
 const isAmsterdam = loc => /amsterdam/i.test(loc);
@@ -987,6 +1016,7 @@ async function loadJobs() {
   document.getElementById('jobs-count').textContent = '';
   const fetches = JOB_COMPANIES.filter(c => c.name !== 'All').map(c => {
     let f;
+    if (c.directLink) return Promise.resolve([]);
     if (c.greenhouse) f = fetchGreenhouse(c.greenhouse);
     else if (c.lever) f = fetchLever(c.lever);
     else if (c.smartrecruiters) f = fetchSmartRecruiters(c.smartrecruiters);
@@ -1007,13 +1037,18 @@ function renderJobs() {
   document.getElementById('jobs-count').textContent = filtered.length ? `${filtered.length} Amsterdam role${filtered.length!==1?'s':''}` : '';
   if (!filtered.length) {
     let msg;
-    if (!allJobs.length) msg = 'Could not load vacancies. Check back later.';
+    if (!allJobs.length && !JOB_COMPANIES.find(c=>c.name===activeCompany&&c.directLink))
+      msg = 'Could not load vacancies. Check back later.';
     else if (activeCompany !== 'All') {
       const co = JOB_COMPANIES.find(c => c.name === activeCompany);
-      const has = allJobs.filter(j => j.company === activeCompany).length;
-      msg = has > 0
-        ? `No Amsterdam roles at ${esc(activeCompany)} right now.<br><a href="${esc(co?.url||'#')}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">Browse all ${esc(activeCompany)} jobs ↗</a>`
-        : `No results for ${esc(activeCompany)}.`;
+      if (co?.directLink) {
+        msg = `Live listings aren't available for ${esc(activeCompany)} — <a href="${esc(co.url)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">browse their careers page directly ↗</a>`;
+      } else {
+        const has = allJobs.filter(j => j.company === activeCompany).length;
+        msg = has > 0
+          ? `No Amsterdam roles at ${esc(activeCompany)} right now.<br><a href="${esc(co?.url||'#')}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">Browse all ${esc(activeCompany)} jobs ↗</a>`
+          : `Could not load ${esc(activeCompany)} jobs.`;
+      }
     } else msg = 'No Amsterdam matches for this filter.';
     document.getElementById('jobs-body').innerHTML = `<div class="jobs-empty">${msg}</div>`;
     return;
