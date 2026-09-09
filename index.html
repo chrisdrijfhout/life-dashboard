@@ -288,6 +288,24 @@ body {
 }
 .jobs-ext-link:hover { border-color: var(--accent); background: var(--accent-d); }
 
+/* Company cards for non-live companies */
+.co-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.co-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border);
+  background: var(--s2); gap: 8px;
+}
+.co-card-name { font-size: 13px; font-weight: 600; color: var(--t1); }
+.co-card-tag  { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.co-card-links { display: flex; gap: 6px; flex-shrink: 0; }
+.co-card-btn {
+  padding: 4px 10px; border-radius: 7px; border: 1px solid var(--border);
+  background: var(--s3); color: var(--t2); font-size: 11px; font-weight: 500;
+  text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s;
+}
+.co-card-btn:hover { color: var(--accent); border-color: var(--accent); }
+.co-card-btn.primary { background: var(--accent-d); border-color: var(--accent); color: var(--accent); }
+
 /* ── News ───────────────────────────────────────────────────── */
 .news-scroll { max-height: 340px; overflow-y: auto; padding: 0 16px 16px; }
 .news-scroll::-webkit-scrollbar { width: 4px; }
@@ -404,6 +422,15 @@ body {
         <button class="card-action" id="btn-refresh-hn" title="Refresh">↻</button>
       </div>
       <div class="news-scroll" id="hn-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
+    </div>
+
+    <!-- Finance & Tech news -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Finance &amp; Tech</span>
+        <button class="card-action" id="btn-refresh-ft" title="Refresh">↻</button>
+      </div>
+      <div class="news-scroll" id="ft-body"><div class="jobs-loading"><span class="spin">↻</span> Loading…</div></div>
     </div>
 
   </div>
@@ -551,23 +578,14 @@ async function loadWeather() {
 // ── Jobs / Vacancies ───────────────────────────────────────────
 const JOB_COMPANIES = [
   { name: 'All' },
-  // Live Greenhouse feeds (Amsterdam-filtered)
-  { name: 'Adyen',        greenhouse: 'adyen',        url: 'https://careers.adyen.com' },
-  { name: 'Uber',         greenhouse: 'uber',          url: 'https://www.uber.com/nl/en/careers/' },
-  { name: 'Elastic',      greenhouse: 'elastic',       url: 'https://www.elastic.co/careers' },
-  { name: 'Miro',         greenhouse: 'miro',          url: 'https://miro.com/careers/' },
-  { name: 'MessageBird',  greenhouse: 'messagebird',   url: 'https://messagebird.com/careers/' },
-  { name: 'WeTransfer',   greenhouse: 'wetransfer',    url: 'https://wetransfer.com/jobs' },
-  // Direct career pages — LinkedIn search links
-  { name: 'Booking.com',  linkedin: 'Booking.com',     url: 'https://jobs.booking.com/en-us/careers' },
-  { name: 'Mollie',       linkedin: 'Mollie',           url: 'https://www.mollie.com/en/jobs' },
-  { name: 'Picnic',       linkedin: 'Picnic',           url: 'https://careers.picnic.app' },
-  { name: 'ABN AMRO',     linkedin: 'ABN AMRO',         url: 'https://werkenbij.abnamro.nl' },
-  { name: 'ASML',         linkedin: 'ASML',             url: 'https://www.asml.com/en/careers' },
+  { name: 'Adyen',       greenhouse: 'adyen',  url: 'https://careers.adyen.com',           liId: '143879', label: 'Fintech / Payments' },
+  { name: 'Booking.com', url: 'https://jobs.booking.com/en-us/careers',                    liId: '1243',   label: 'Travel tech' },
+  { name: 'ING',         url: 'https://www.ing.jobs/netherlands/search',                   liId: '1069',   label: 'Banking' },
+  { name: 'ABN AMRO',   url: 'https://werkenbij.abnamro.nl',                               liId: '51390',  label: 'Banking' },
+  { name: 'Rabobank',   url: 'https://www.rabobank.com/en/careers',                        liId: '21018',  label: 'Banking' },
 ];
 let allJobs = [], activeCompany = 'All';
-// Match Amsterdam, Netherlands, or hybrid/remote NL
-const isAmsterdam = loc => !loc || /amsterdam|netherlands|nederland|nl/i.test(loc);
+const isAmsterdam = loc => !loc || /amsterdam|netherlands|nederland|\bnl\b/i.test(loc);
 
 async function fetchGreenhouse(slug) {
   try {
@@ -577,33 +595,14 @@ async function fetchGreenhouse(slug) {
     return (data.jobs||[]).map(j => ({ title:j.title, url:j.absolute_url, location:j.location?.name||'', dept:j.departments?.[0]?.name||'' }));
   } catch { return []; }
 }
-async function fetchLever(slug) {
-  try {
-    const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`, { signal: AbortSignal.timeout(10000) });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    return (Array.isArray(data)?data:[]).map(j => ({ title:j.text, url:j.hostedUrl, location:j.categories?.location||j.workplaceType||'', dept:j.categories?.team||j.categories?.department||'' }));
-  } catch { return []; }
-}
-async function fetchSmartRecruiters(slug) {
-  try {
-    const res = await fetch(`https://api.smartrecruiters.com/v1/companies/${slug}/postings?offset=0&limit=200`, { signal: AbortSignal.timeout(10000) });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    return (data.content||[]).map(j => ({ title:j.name, url:j.ref||`https://jobs.smartrecruiters.com/${slug}`, location:[j.location?.city,j.location?.country].filter(Boolean).join(', '), dept:j.department?.label||'' }));
-  } catch { return []; }
-}
+
 async function loadJobs() {
   document.getElementById('jobs-body').innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
   document.getElementById('jobs-count').textContent = '';
   const fetches = JOB_COMPANIES.filter(c => c.name !== 'All').map(c => {
-    let f;
-    if (c.linkedin) return Promise.resolve([]);   // LinkedIn-only: no live feed
-    if (c.greenhouse) f = fetchGreenhouse(c.greenhouse);
-    else if (c.lever) f = fetchLever(c.lever);
-    else if (c.smartrecruiters) f = fetchSmartRecruiters(c.smartrecruiters);
-    else return Promise.resolve([]);
-    return f.then(jobs => jobs.map(j => ({ ...j, company: c.name, companyUrl: c.url })));
+    if (!c.greenhouse) return Promise.resolve([]); // no live API
+    return fetchGreenhouse(c.greenhouse)
+      .then(jobs => jobs.map(j => ({ ...j, company: c.name, companyUrl: c.url })));
   });
   allJobs = (await Promise.all(fetches)).flat();
   renderJobs();
@@ -617,33 +616,32 @@ function renderJobs() {
     return matchCo && matchQ;
   });
   document.getElementById('jobs-count').textContent = filtered.length ? `${filtered.length} Amsterdam role${filtered.length!==1?'s':''}` : '';
+  // Helper: company card for companies without live API
+  function coCard(co) {
+    const liUrl = co.liId
+      ? `https://www.linkedin.com/jobs/search/?f_C=${co.liId}&location=Amsterdam%2C+Netherlands`
+      : `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(co.name)}&location=Amsterdam%2C+Netherlands`;
+    return `<div class="co-card">
+      <div><div class="co-card-name">${esc(co.name)}</div><div class="co-card-tag">${esc(co.label||'')}</div></div>
+      <div class="co-card-links">
+        <a class="co-card-btn primary" href="${esc(liUrl)}" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="co-card-btn" href="${esc(co.url)}" target="_blank" rel="noopener">Careers ↗</a>
+      </div>
+    </div>`;
+  }
+
   if (!filtered.length) {
-    let msg;
-    if (activeCompany !== 'All') {
-      const co = JOB_COMPANIES.find(c => c.name === activeCompany);
-      if (co?.linkedin) {
-        const liUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(co.linkedin)}&location=Amsterdam%2C+Netherlands&f_TPR=r604800`;
-        msg = `<div class="jobs-empty">Live feed not available for ${esc(activeCompany)}.</div>
-          <div class="jobs-link-row">
-            <a class="jobs-ext-link" href="${esc(liUrl)}" target="_blank" rel="noopener">🔍 Search on LinkedIn ↗</a>
-            <a class="jobs-ext-link" href="${esc(co.url)}" target="_blank" rel="noopener">🏢 Careers page ↗</a>
-          </div>`;
-      } else {
-        const has = allJobs.filter(j => j.company === activeCompany).length;
-        msg = has > 0
-          ? `<div class="jobs-empty">No Amsterdam roles at ${esc(activeCompany)} right now.</div>
-             <div class="jobs-link-row"><a class="jobs-ext-link" href="${esc(co?.url||'#')}" target="_blank" rel="noopener">All ${esc(activeCompany)} jobs ↗</a></div>`
-          : `<div class="jobs-empty">Could not reach ${esc(activeCompany)} API.</div>`;
-      }
+    const co = activeCompany !== 'All' ? JOB_COMPANIES.find(c => c.name === activeCompany) : null;
+    if (co && !co.greenhouse) {
+      document.getElementById('jobs-body').innerHTML = `<div class="jobs-empty" style="margin-bottom:10px">No direct API — open job boards:</div><div class="co-cards">${coCard(co)}</div>`;
     } else if (!allJobs.length) {
-      msg = '<div class="jobs-empty">Could not load vacancies. Check back later.</div>';
+      document.getElementById('jobs-body').innerHTML = '<div class="jobs-empty">Could not load vacancies. Check back later.</div>';
     } else {
-      msg = '<div class="jobs-empty">No matches for this filter.</div>';
+      document.getElementById('jobs-body').innerHTML = `<div class="jobs-empty">No Amsterdam matches${activeCompany !== 'All' ? ' at ' + esc(activeCompany) : ''}.</div>`;
     }
-    document.getElementById('jobs-body').innerHTML = msg;
     return;
   }
-  document.getElementById('jobs-body').innerHTML = filtered.slice(0,30).map(j => `
+  const listHtml = filtered.slice(0,20).map(j => `
     <div class="job-item">
       <a class="job-title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
       <div class="job-meta">
@@ -652,6 +650,17 @@ function renderJobs() {
         ${j.dept     ? `<span class="job-dept">${esc(j.dept)}</span>` : ''}
       </div>
     </div>`).join('');
+
+  // For "All" view, append cards for companies without live feed
+  let cardsHtml = '';
+  if (activeCompany === 'All') {
+    const noFeed = JOB_COMPANIES.filter(c => c.name !== 'All' && !c.greenhouse);
+    if (noFeed.length) {
+      cardsHtml = `<div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:14px 0 8px">Also hiring in Amsterdam</div>
+        <div class="co-cards">${noFeed.map(coCard).join('')}</div>`;
+    }
+  }
+  document.getElementById('jobs-body').innerHTML = listHtml + cardsHtml;
 }
 function renderJobChips() {
   const row = document.getElementById('jobs-chips');
@@ -683,9 +692,10 @@ async function loadAT5() {
   }
 
   const FEEDS = [
-    { url: 'https://www.nu.nl/rss/amsterdam',    source: 'nu.nl' },
-    { url: 'https://feeds.nos.nl/nosnieuws',     source: 'NOS' },
-    { url: 'https://www.at5.nl/nieuws/rss',      source: 'AT5' },
+    { url: 'https://www.at5.nl/nieuws/rss',         source: 'AT5' },
+    { url: 'https://at5.nl/rss.xml',                source: 'AT5' },
+    { url: 'https://www.nu.nl/rss/amsterdam',       source: 'nu.nl' },
+    { url: 'https://feeds.nos.nl/nosnieuws',        source: 'NOS' },
   ];
 
   for (const feed of FEEDS) {
@@ -737,6 +747,43 @@ async function loadHN() {
   body.innerHTML = `
     <div class="news-error">Could not load world news.</div>
     <a href="https://www.bbc.com/news/world" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open BBC News ↗</a>`;
+}
+
+
+// ── Finance & Tech News ───────────────────────────────────────
+async function loadFT() {
+  const body = document.getElementById('ft-body');
+  body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
+
+  const FEEDS = [
+    { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html',  source: 'CNBC' },
+    { url: 'https://feeds.bloomberg.com/markets/news.rss',            source: 'Bloomberg' },
+    { url: 'https://feeds.reuters.com/reuters/businessNews',          source: 'Reuters' },
+    { url: 'https://feeds.marketwatch.com/marketwatch/topstories/',   source: 'MarketWatch' },
+    { url: 'https://techcrunch.com/feed/',                            source: 'TechCrunch' },
+  ];
+
+  for (const feed of FEEDS) {
+    try {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
+      const res = await fetch(apiUrl, { signal: AbortSignal.timeout(9000) });
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        body.innerHTML = data.items.slice(0, 10).map(item => {
+          const ago = item.pubDate ? timeAgo(new Date(item.pubDate)) : '';
+          return `<div class="news-item">
+            <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+            <div class="news-meta">${ago ? ago + ' · ' : ''}<span class="news-source">${esc(feed.source)}</span></div>
+          </div>`;
+        }).join('');
+        return;
+      }
+    } catch { /* try next */ }
+  }
+
+  body.innerHTML = `
+    <div class="news-error">Could not load finance news.</div>
+    <a href="https://www.cnbc.com" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open CNBC ↗</a>`;
 }
 
 // ── Time helper ───────────────────────────────────────────────
@@ -829,6 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // News refresh buttons
   document.getElementById('btn-refresh-at5').addEventListener('click', loadAT5);
   document.getElementById('btn-refresh-hn').addEventListener('click', loadHN);
+  document.getElementById('btn-refresh-ft').addEventListener('click', loadFT);
 
   // Initial loads
   renderCalendar();
@@ -837,6 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadJobs();
   loadAT5();
   loadHN();
+  loadFT();
 });
 </script>
 </body>
