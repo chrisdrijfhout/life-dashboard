@@ -6,6 +6,7 @@
 <title>Chris's Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap">
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzQksaZa9B68nj3E4bWsOvfxz-OJYGo48&libraries=places&callback=initMap"></script>
 
 <style>
 /* ── Tokens — Amsterdam Canal ───────────────────────────────── */
@@ -163,6 +164,53 @@ body {
 }
 .wx-city-btn:hover { opacity: .85; }
 
+/* ── Map / Spots ─────────────────────────────────────────────── */
+.map-cat-row {
+  display: flex; gap: 5px; flex-wrap: nowrap; overflow-x: auto;
+  padding-bottom: 8px; margin-bottom: 8px; scrollbar-width: none;
+}
+.map-cat-row::-webkit-scrollbar { display: none; }
+.map-cat-chip {
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--s2); color: var(--t2);
+  cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0;
+}
+.map-cat-chip.active { background: var(--accent-d); border-color: var(--accent); color: var(--accent); }
+.map-cat-chip:hover:not(.active) { border-color: var(--t3); color: var(--t1); }
+#gmap { border-radius: 9px; height: 270px; width: 100%; }
+.spot-search-wrap { margin-bottom: 8px; }
+.spot-search-inp {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--t1);
+}
+.spot-search-inp:focus { outline: none; border-color: var(--accent); }
+#spots-list { max-height: 190px; overflow-y: auto; padding-right: 2px; margin-top: 6px; }
+#spots-list::-webkit-scrollbar { width: 3px; }
+#spots-list::-webkit-scrollbar-track { background: transparent; }
+#spots-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.spot-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 6px; border-radius: 7px; cursor: pointer; transition: background .12s;
+}
+.spot-item:hover, .spot-item.active { background: var(--s2); }
+.spot-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.spot-name { font-size: 12px; color: var(--t1); line-height: 1.3; }
+#route-info { margin-top: 8px; }
+.route-panel {
+  background: var(--s2); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 12px;
+}
+.route-step {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.route-line-badge {
+  background: var(--s3); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px; font-size: 10px;
+  font-weight: 700; color: var(--accent); flex-shrink: 0;
+}
+.map-loading { display:flex; align-items:center; justify-content:center; height:270px; font-size:13px; color:var(--t2); background:var(--s2); border-radius:9px; }
+
 /* ── Calendar ─────────────────────────────────────────────────── */
 .cal-embed {
   width: 100%; border: none; border-radius: 9px;
@@ -273,7 +321,6 @@ body {
 .save-status { font-size: 11px; color: var(--t3); font-style: italic; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { display: inline-block; animation: spin .7s linear infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
 /* ── Jobs scroll ─────────────────────────────────────────── */
 #jobs-body { max-height: 360px; overflow-y: auto; padding-right: 2px; }
 #jobs-body::-webkit-scrollbar { width: 4px; }
@@ -287,8 +334,6 @@ body {
   text-decoration: none; transition: border-color .15s, background .15s;
 }
 .jobs-ext-link:hover { border-color: var(--accent); background: var(--accent-d); }
-
-/* Company cards for non-live companies */
 .co-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .co-card {
   display: flex; align-items: center; justify-content: space-between;
@@ -318,7 +363,6 @@ body {
 .news-meta { font-size: 11px; color: var(--t3); margin-top: 3px; }
 .news-source { font-weight: 600; color: var(--t2); }
 .news-error { color: var(--warm); font-size: 13px; padding: 12px 0; }
-
 </style>
 </head>
 <body>
@@ -356,18 +400,28 @@ body {
       </div>
     </div>
 
-    <!-- Map -->
-    <div class="card" style="overflow:hidden">
-      <div class="card-header" style="padding-bottom:0">
-        <span class="card-title">Amsterdam</span>
-        <a href="https://www.google.com/maps/@52.3676,4.9041,13z" target="_blank" rel="noopener" class="card-action" style="font-size:11.5px;color:var(--blue);text-decoration:none">Open full ↗</a>
+    <!-- Map / Spots -->
+    <div class="card">
+      <div class="card-header" style="margin-bottom:10px">
+        <span class="card-title">Amsterdam Spots</span>
+        <button class="card-action" id="btn-map-reset" title="Reset map" style="font-size:14px">⌂</button>
       </div>
-      <div style="margin-top:10px;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;height:clamp(280px,48vh,560px)">
-        <iframe
-          src="https://maps.google.com/maps?q=Amsterdam,Netherlands&t=&z=13&ie=UTF8&iwloc=&output=embed"
-          width="100%" height="100%" style="border:0;display:block" allowfullscreen loading="lazy"
-          title="Amsterdam map">
-        </iframe>
+      <div class="card-body" style="padding-top:0">
+        <!-- Category filter -->
+        <div class="map-cat-row" id="map-cats"></div>
+        <!-- Search -->
+        <div class="spot-search-wrap">
+          <input class="spot-search-inp" id="spot-search" placeholder="Search your 339 spots…" autocomplete="off">
+        </div>
+        <!-- Map -->
+        <div id="gmap-wrap">
+          <div class="map-loading" id="gmap-loading"><span class="spin">↻</span>&nbsp; Loading map…</div>
+          <div id="gmap" style="display:none"></div>
+        </div>
+        <!-- Route info -->
+        <div id="route-info"></div>
+        <!-- Spots list -->
+        <div id="spots-list"></div>
       </div>
     </div>
 
@@ -467,6 +521,7 @@ const state = loadState();
 
 // ── Helpers ────────────────────────────────────────────────────
 const esc = s => !s ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escAttr = s => !s ? '' : String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -478,6 +533,622 @@ function updateClock() {
   document.title = `${state.name}'s Dashboard`;
 }
 setInterval(updateClock, 1000); updateClock();
+
+// ── Places Data ────────────────────────────────────────────────
+const PLACES=[
+  {n:'Mediamatic',c:'culture'},
+  {n:'Broodjeszaak de roeter',c:'restaurants'},
+  {n:'Kom Habibi',c:'restaurants'},
+  {n:'Pina Specialty Coffee & Matcha',c:'coffee'},
+  {n:'The Pizza Vagabond',c:'restaurants'},
+  {n:'Cantina Caliente - Cocina Latina',c:'restaurants'},
+  {n:'Pllek',c:'outdoor'},
+  {n:'Coffee & Coconuts | Specialty Coffee | Pastry | Matcha | Food to go',c:'coffee'},
+  {n:'Café Checkpoint Charlie',c:'bars'},
+  {n:'Filmtheater Kriterion',c:'culture'},
+  {n:'Café Fest',c:'bars'},
+  {n:'Studio/K',c:'nightlife'},
+  {n:"Thull's Deli",c:'restaurants'},
+  {n:'BIMHUIS',c:'culture'},
+  {n:'Omelegg - de Pijp',c:'restaurants'},
+  {n:'Eetcafé KANIS',c:'bars'},
+  {n:'Pakhuis de Zwijger',c:'culture'},
+  {n:'Foundation Nowhere',c:'culture'},
+  {n:'Mitsos Greek Traiterie',c:'restaurants'},
+  {n:'Greco taste from Greece',c:'restaurants'},
+  {n:'The Gyros Lab',c:'restaurants'},
+  {n:'Duke of Tokyo',c:'bars'},
+  {n:"Irish Pub O'Donnell's Amsterdam",c:'bars'},
+  {n:'Lightning VR Amsterdam Noord',c:'activity'},
+  {n:'Lebkov & Sons Roeterseiland',c:'restaurants'},
+  {n:'CREA Café',c:'restaurants'},
+  {n:'Café de Krater',c:'bars'},
+  {n:'Dandy Burger',c:'restaurants'},
+  {n:'Beef Chief // Transit Bar',c:'restaurants'},
+  {n:'NDSM',c:'outdoor'},
+  {n:'Het Marnix',c:'sports'},
+  {n:'WellCome Wellness Amsterdam',c:'wellness'},
+  {n:'Nagomi Spa & Health',c:'wellness'},
+  {n:'Anuki Natural Facelift massages',c:'wellness'},
+  {n:'LUCA Boutique wellness in Amsterdam',c:'wellness'},
+  {n:'Our Way Japanese Head Spa',c:'wellness'},
+  {n:"Café 't Hooischip",c:'bars'},
+  {n:'LOT61 Coffee Roasters',c:'coffee'},
+  {n:'IJsboutique',c:'other'},
+  {n:'Café Van Daele',c:'bars'},
+  {n:'Nido Cocktail bar',c:'bars'},
+  {n:'GAJA Korean BBQ & Bar Amsterdam',c:'restaurants'},
+  {n:'Sea Palace Restaurant',c:'restaurants'},
+  {n:"Molly Malone's Irish Pub",c:'bars'},
+  {n:'Couvert',c:'restaurants'},
+  {n:"Bo's Amsterdam",c:'restaurants'},
+  {n:'Coffee Room.',c:'coffee'},
+  {n:'LOT61 Amsterdam Centraal Station',c:'coffee'},
+  {n:'Coffee Company.',c:'coffee'},
+  {n:'The Block Coffee',c:'coffee'},
+  {n:'Werkplaats',c:'other'},
+  {n:"Freddy's Bar",c:'bars'},
+  {n:'Hiding in Plain Sight',c:'bars'},
+  {n:"Joe's Pizza",c:'restaurants'},
+  {n:"L'Ami Pierre - French Bakery",c:'restaurants'},
+  {n:'Sunday Morning',c:'coffee'},
+  {n:'Hannekes Boom',c:'outdoor'},
+  {n:'Waterkant',c:'outdoor'},
+  {n:'Buitenzwembad Marineterrein',c:'sports'},
+  {n:'Sango Specialty Coffee Roasters',c:'coffee'},
+  {n:'Satellite Sportscafé',c:'bars'},
+  {n:'Flight Golf',c:'activity'},
+  {n:'House of Watt',c:'nightlife'},
+  {n:'Klönneplein',c:'outdoor'},
+  {n:'Meneer van Galen',c:'restaurants'},
+  {n:'Beachclub 19',c:'outdoor'},
+  {n:'BigGym Amsterdam',c:'sports'},
+  {n:'Bakery DAM',c:'restaurants'},
+  {n:'The Greek Embassy Coffee Bar',c:'coffee'},
+  {n:'Landmarkt',c:'restaurants'},
+  {n:'Viswinkel Peter Tol',c:'restaurants'},
+  {n:'Flevoparkbad',c:'sports'},
+  {n:'Chun Café Spuistraat',c:'coffee'},
+  {n:'Chun Café Berenstraat',c:'coffee'},
+  {n:'No Cappuccino Studios',c:'studios'},
+  {n:'Soundspace Studios',c:'studios'},
+  {n:'Waterhouse Studios',c:'studios'},
+  {n:'Capital C Diamantbeurs',c:'work'},
+  {n:'Peakz Padel Olympiaplein',c:'sports'},
+  {n:'Lawn Tennis Club Festina',c:'sports'},
+  {n:'Golfcentrum Amsteldijk',c:'activity'},
+  {n:'Thuishaven Festivalterrein',c:'nightlife'},
+  {n:'Heineken Experience',c:'activity'},
+  {n:'Lofi',c:'nightlife'},
+  {n:'BRET',c:'nightlife'},
+  {n:'Gashouder Westergasfabriek',c:'nightlife'},
+  {n:'Café Restaurant Czaar',c:'bars'},
+  {n:'Hidden Gem Studio',c:'studios'},
+  {n:'Rekorder Studios',c:'studios'},
+  {n:'Beatfabriek',c:'studios'},
+  {n:'Already Made Studios',c:'studios'},
+  {n:'S-Bahn Studio Amsterdam',c:'studios'},
+  {n:'A Lab',c:'other'},
+  {n:'WeWork Amsterdam',c:'work'},
+  {n:'B. amsterdam padel',c:'sports'},
+  {n:'StartDock Keizersgracht',c:'work'},
+  {n:'StartDock Coworking Prins Hendrikkade',c:'work'},
+  {n:'TNW City',c:'other'},
+  {n:'StartDock Coworking Singel',c:'work'},
+  {n:'PONG - Ping Pong bar',c:'activity'},
+  {n:'Club Noir Amsterdam',c:'nightlife'},
+  {n:'Tennis court Rietlandpark',c:'sports'},
+  {n:'Bar & Kitchen De Zuid',c:'bars'},
+  {n:'De Blaffende Vis',c:'bars'},
+  {n:'Pompstation',c:'nightlife'},
+  {n:'Toekomstmuziek',c:'nightlife'},
+  {n:'café twee prinsen',c:'bars'},
+  {n:'Noordermarkt',c:'outdoor'},
+  {n:'Café Restaurant De Reiger',c:'bars'},
+  {n:'Badeta Coffee Van Wou',c:'coffee'},
+  {n:'Bar Dó',c:'bars'},
+  {n:'Buurtcafé De Tros',c:'bars'},
+  {n:'IZAKAYA',c:'restaurants'},
+  {n:'MR PORTER Restaurant Bar & Lounge',c:'restaurants'},
+  {n:'Zero Zero',c:'restaurants'},
+  {n:"Witte gij't",c:'bars'},
+  {n:'Café Helmers',c:'bars'},
+  {n:'Coffeeshop DrewIsSharing',c:'coffee'},
+  {n:'Lourens',c:'restaurants'},
+  {n:"Café 't Smalle",c:'bars'},
+  {n:'Peakz Padel Amsterdam Kauwgomballenkwartier',c:'sports'},
+  {n:'Peakz Padel Amsterdam Zuidoost',c:'sports'},
+  {n:'Café Restaurant Dauphine',c:'bars'},
+  {n:'My Escape Club',c:'nightlife'},
+  {n:'Bar Guzzo',c:'bars'},
+  {n:'Café Kontakt',c:'bars'},
+  {n:'Cafe amore',c:'bars'},
+  {n:'Mokum Pool & Darts',c:'activity'},
+  {n:"McGee's Pub",c:'bars'},
+  {n:'Bean There Co.',c:'coffee'},
+  {n:'Bitterzoet',c:'nightlife'},
+  {n:'Original Dampkring Coffeeshop',c:'coffee'},
+  {n:'Panama',c:'nightlife'},
+  {n:'citizenM Amsterdam Amstel',c:'hotels'},
+  {n:'Conscious Hotel Museum Square',c:'culture'},
+  {n:'Leonardo Hotel Amsterdam Rembrandtpark',c:'hotels'},
+  {n:'Café Belcampo',c:'bars'},
+  {n:'Volkshotel',c:'hotels'},
+  {n:'Eetsalon Van Dobben',c:'restaurants'},
+  {n:"Bouillon d'Amsterdam",c:'restaurants'},
+  {n:'Coffee & Cakes',c:'coffee'},
+  {n:'Q-Factory',c:'nightlife'},
+  {n:'Blast Galaxy',c:'activity'},
+  {n:'Sporthallen Zuid',c:'sports'},
+  {n:'Zero Latency VR Amsterdam',c:'activity'},
+  {n:'Moco Museum Amsterdam',c:'culture'},
+  {n:'Boom Chicago',c:'activity'},
+  {n:'FilmHallen',c:'culture'},
+  {n:'Bar Bukowski',c:'bars'},
+  {n:'Village Bagels',c:'restaurants'},
+  {n:'TrainMore Amsterdam Oosterdok',c:'sports'},
+  {n:"Desmet Studio's Amsterdam",c:'studios'},
+  {n:'STMPD recording studios',c:'studios'},
+  {n:'IJland Studio',c:'studios'},
+  {n:'Amsterdam Recording Company',c:'studios'},
+  {n:'Sushi Fanatics',c:'restaurants'},
+  {n:'Ken Sushi',c:'restaurants'},
+  {n:'Café Bern',c:'bars'},
+  {n:'The Living Kitchen Rooftop Restaurant by Zoku',c:'restaurants'},
+  {n:'TonTon Club Westergas',c:'activity'},
+  {n:'Night Kitchen Amsterdam',c:'nightlife'},
+  {n:'Assaggi',c:'restaurants'},
+  {n:'Mojo Japanese Kitchen',c:'restaurants'},
+  {n:'Zoku Amsterdam',c:'hotels'},
+  {n:'Hotel & Wellness Zuiver',c:'wellness'},
+  {n:'Ramen-Ya',c:'restaurants'},
+  {n:'Vatten Ramen Zeedijk',c:'restaurants'},
+  {n:'SORA Sapporo Ramen',c:'restaurants'},
+  {n:'Fuku Ramen',c:'restaurants'},
+  {n:'Nomi Leidseplein',c:'restaurants'},
+  {n:'Toko Kok Kita',c:'restaurants'},
+  {n:'De Hapjeshoek',c:'restaurants'},
+  {n:'Dumplings',c:'restaurants'},
+  {n:'Tony NY City Bagels',c:'restaurants'},
+  {n:'Final Touch snooker & pool',c:'activity'},
+  {n:'Café Noir',c:'bars'},
+  {n:'Mezrab',c:'culture'},
+  {n:'Ceintuurbaan Court',c:'sports'},
+  {n:'Vendôme',c:'restaurants'},
+  {n:'Glow miniGolf Amsterdam',c:'activity'},
+  {n:'Golflounge Amsterdam',c:'activity'},
+  {n:'Golfclub Amsterdam Old Course',c:'activity'},
+  {n:'KingsGolf Amsterdam',c:'activity'},
+  {n:'WONDR Experience',c:'activity'},
+  {n:'The Pool Bar',c:'activity'},
+  {n:'Saloon Smoking Bull',c:'bars'},
+  {n:'Poolbar De Gracht',c:'activity'},
+  {n:'Café Gijs de Rooy',c:'bars'},
+  {n:'Tigris En Eufraat',c:'restaurants'},
+  {n:'Focacceria',c:'restaurants'},
+  {n:'Salmuera',c:'restaurants'},
+  {n:"Flo's Deli",c:'restaurants'},
+  {n:'Oriental City Amsterdam',c:'restaurants'},
+  {n:'Atilla Turkish Cuisine',c:'restaurants'},
+  {n:'Mezzave',c:'restaurants'},
+  {n:'Singel 404',c:'restaurants'},
+  {n:'Hoi Tin',c:'restaurants'},
+  {n:'Taste of Culture',c:'restaurants'},
+  {n:'Seoul Food',c:'restaurants'},
+  {n:'Restaurant Khan',c:'restaurants'},
+  {n:'Broodje Bert',c:'restaurants'},
+  {n:'MasMais Taqueria',c:'restaurants'},
+  {n:'Coba',c:'restaurants'},
+  {n:'Tacoteca',c:'restaurants'},
+  {n:'La Condesa Taqueria',c:'restaurants'},
+  {n:'The Butcher',c:'restaurants'},
+  {n:'THE BUTCHER Nine Streets',c:'restaurants'},
+  {n:'THE BUTCHER Social Club',c:'restaurants'},
+  {n:'Burgerbar Kolksteeg',c:'restaurants'},
+  {n:'Burgerbar Warmoesstraat',c:'restaurants'},
+  {n:'Burgerbar De Pijp',c:'restaurants'},
+  {n:'Bella Storia',c:'restaurants'},
+  {n:'Fuoco Vivo',c:'restaurants'},
+  {n:'Margherita Tutta La Vita',c:'restaurants'},
+  {n:'nNea Pizza',c:'restaurants'},
+  {n:'De Kas',c:'restaurants'},
+  {n:'Eatmosfera East',c:'restaurants'},
+  {n:'Sham Oost',c:'restaurants'},
+  {n:'Five Ways Coffee Roasters',c:'coffee'},
+  {n:"BLUEY'S Coffee & Kitchen",c:'coffee'},
+  {n:'KAFFEE',c:'coffee'},
+  {n:'Bar Botanique',c:'bars'},
+  {n:'Barmhartig Koffie',c:'coffee'},
+  {n:"O'Reilly's Irish Pub",c:'bars'},
+  {n:'PLTS Reformer Pilates de Pijp',c:'sports'},
+  {n:'Scandinavian Embassy.',c:'coffee'},
+  {n:'Levenslang Amsterdam',c:'culture'},
+  {n:'Parels van de Stad',c:'culture'},
+  {n:'De Bakkers Van Oost',c:'restaurants'},
+  {n:'Stadsbakkerij As',c:'restaurants'},
+  {n:'Café Marcella',c:'bars'},
+  {n:'De Blauwe Engel',c:'bars'},
+  {n:'Zum Barbarossa',c:'bars'},
+  {n:'Hoppe',c:'bars'},
+  {n:'Hasta La Vista Baby Rooftop Bar',c:'restaurants'},
+  {n:'SHU Amsterdam',c:'restaurants'},
+  {n:'tuftuf',c:'restaurants'},
+  {n:"Dickys Grand Café",c:'restaurants'},
+  {n:'Le Grand George',c:'restaurants'},
+  {n:'Conservatorium Hotel',c:'bars'},
+  {n:'Rosewood Amsterdam',c:'bars'},
+  {n:'Lost in Amsterdam Lounge Cocktail Bar',c:'bars'},
+  {n:'Mémoire Amsterdam',c:'bars'},
+  {n:"A'DAM The Loft",c:'other'},
+  {n:'Paradiso',c:'nightlife'},
+  {n:'Escape',c:'nightlife'},
+  {n:'De Mirandabad',c:'sports'},
+  {n:'W Amsterdam',c:'bars'},
+  {n:'Padel NEXT',c:'sports'},
+  {n:'Oche',c:'activity'},
+  {n:'Jimmy Woo',c:'nightlife'},
+  {n:'RADION Amsterdam',c:'nightlife'},
+  {n:'Skatecafe',c:'nightlife'},
+  {n:'Garage Noord',c:'nightlife'},
+  {n:'Club NYX',c:'nightlife'},
+  {n:'W Lounge',c:'bars'},
+  {n:'Malabar Amsterdam',c:'nightlife'},
+  {n:'Vitalité Ferrier Reformer Pilates',c:'sports'},
+  {n:'Flevopark',c:'outdoor'},
+  {n:"Brouwerij 't IJ",c:'bars'},
+  {n:'Bar Baggerbeest',c:'bars'},
+  {n:'Gollem Aan Het Water',c:'bars'},
+  {n:'Beste Doner',c:'restaurants'},
+  {n:'BAR JOOST',c:'bars'},
+  {n:'TrainMore Amsterdam Piet Heinkade',c:'sports'},
+  {n:'Chicago Social Club',c:'nightlife'},
+  {n:'Restaurant Table 24',c:'restaurants'},
+  {n:'MAITA Cocina Nikkei',c:'restaurants'},
+  {n:'Toujours',c:'restaurants'},
+  {n:'by LIMA',c:'restaurants'},
+  {n:'TOAST',c:'restaurants'},
+  {n:'The Breakfast Club',c:'coffee'},
+  {n:'Corner Bakery',c:'coffee'},
+  {n:'Greenwoods Keizersgracht',c:'coffee'},
+  {n:'Dignita Vondelpark',c:'coffee'},
+  {n:'Staring at Jacob',c:'coffee'},
+  {n:'Bakers & Roasters',c:'coffee'},
+  {n:'AFC IJburg',c:'sports'},
+  {n:'Tennisclub IJburg',c:'sports'},
+  {n:'Sluis Gym',c:'sports'},
+  {n:'David Lloyd Amsterdam',c:'sports'},
+  {n:'Clubsportive',c:'sports'},
+  {n:"Sissi's Amsterdam",c:'restaurants'},
+  {n:'The Generous',c:'restaurants'},
+  {n:'Rolling Pizza',c:'restaurants'},
+  {n:'MeWe Amsterdam',c:'restaurants'},
+  {n:'Chin Chin Club',c:'restaurants'},
+  {n:'Madam Amsterdam',c:'nightlife'},
+  {n:'Xi An Delicious Foods',c:'restaurants'},
+  {n:'Jazz Café Alto',c:'bars'},
+  {n:'Melkweg',c:'nightlife'},
+  {n:'XO Hotels Couture',c:'hotels'},
+];
+
+// ── Map Constants ──────────────────────────────────────────────
+const HOME_LATLNG = { lat: 52.3611, lng: 4.9543 }; // Zeeburgereiland
+const MAP_CENTER  = { lat: 52.3740, lng: 4.8897 };  // Amsterdam center
+
+const CAT_META = {
+  all:         { label: 'All',      color: '#7AAEBF' },
+  restaurants: { label: '🍽 Eat',   color: '#E07A5F' },
+  bars:        { label: '🍺 Bars',  color: '#7EC8E3' },
+  coffee:      { label: '☕ Coffee',color: '#D4A373' },
+  nightlife:   { label: '🌙 Nights',color: '#C77DFF' },
+  sports:      { label: '🏃 Sports',color: '#4CAF50' },
+  activity:    { label: '🎮 Fun',   color: '#FFB300' },
+  culture:     { label: '🎨 Culture',color:'#FF7043' },
+  wellness:    { label: '🧘 Wellness',color:'#26C6DA' },
+  outdoor:     { label: '🌿 Outdoor',color:'#66BB6A' },
+  studios:     { label: '🎵 Studios',color:'#AB47BC' },
+  work:        { label: '💼 Work',  color: '#5C6BC0' },
+  hotels:      { label: '🏨 Hotels',color: '#8D6E63' },
+  other:       { label: '◎ Other', color: '#78909C' },
+};
+
+const MAP_DARK_STYLE = [
+  {elementType:'geometry',stylers:[{color:'#0A1622'}]},
+  {elementType:'labels.text.fill',stylers:[{color:'#7AAEBF'}]},
+  {elementType:'labels.text.stroke',stylers:[{color:'#0A1622'}]},
+  {featureType:'water',elementType:'geometry',stylers:[{color:'#0D1E2E'}]},
+  {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#3A6678'}]},
+  {featureType:'road',elementType:'geometry',stylers:[{color:'#182C3F'}]},
+  {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#1F3850'}]},
+  {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#4EA8D2'}]},
+  {featureType:'road',elementType:'labels.text.stroke',stylers:[{color:'#0A1622'}]},
+  {featureType:'poi',elementType:'geometry',stylers:[{color:'#111F2E'}]},
+  {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#3A6678'}]},
+  {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#0F2535'}]},
+  {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#2A5040'}]},
+  {featureType:'transit',elementType:'geometry',stylers:[{color:'#182C3F'}]},
+  {featureType:'transit.station',elementType:'labels.text.fill',stylers:[{color:'#7EC8E3'}]},
+  {featureType:'transit.station',elementType:'labels.icon',stylers:[{color:'#4EA8D2'}]},
+  {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#1A3448'}]},
+  {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#D8ECF5'}]},
+  {featureType:'administrative.neighborhood',elementType:'labels.text.fill',stylers:[{color:'#3A6678'}]},
+];
+
+// ── Map State ──────────────────────────────────────────────────
+let gmap = null, gDirectionsSvc = null, gDirectionsRenderer = null, gPlacesSvc = null;
+let activeMarker = null, activeInfoWindow = null;
+let activeMapCat = 'all';
+let mapSearchTimer = null;
+
+// ── initMap — called by Google Maps API ───────────────────────
+function initMap() {
+  const mapEl = document.getElementById('gmap');
+  const loadingEl = document.getElementById('gmap-loading');
+
+  mapEl.style.display = 'block';
+  if (loadingEl) loadingEl.style.display = 'none';
+
+  gmap = new google.maps.Map(mapEl, {
+    center: MAP_CENTER,
+    zoom: 13,
+    styles: MAP_DARK_STYLE,
+    disableDefaultUI: true,
+    zoomControl: true,
+    zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+    gestureHandling: 'cooperative',
+    clickableIcons: false,
+  });
+
+  // Home marker — Zeeburgereiland
+  new google.maps.Marker({
+    position: HOME_LATLNG,
+    map: gmap,
+    title: 'Home — Zeeburgereiland',
+    zIndex: 10,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 9,
+      fillColor: '#4EA8D2',
+      fillOpacity: 1,
+      strokeColor: '#ffffff',
+      strokeWeight: 2.5,
+    }
+  });
+
+  gDirectionsSvc = new google.maps.DirectionsService();
+  gDirectionsRenderer = new google.maps.DirectionsRenderer({
+    map: gmap,
+    suppressMarkers: false,
+    polylineOptions: { strokeColor: '#4EA8D2', strokeWeight: 4, strokeOpacity: 0.85 },
+  });
+  gPlacesSvc = new google.maps.places.PlacesService(gmap);
+
+  renderMapCats();
+  renderSpotsList();
+
+  // Wire up spot search
+  document.getElementById('spot-search').addEventListener('input', () => {
+    clearTimeout(mapSearchTimer);
+    mapSearchTimer = setTimeout(renderSpotsList, 160);
+  });
+
+  // Reset button
+  document.getElementById('btn-map-reset').addEventListener('click', resetMap);
+}
+
+// ── Reset map ──────────────────────────────────────────────────
+function resetMap() {
+  if (!gmap) return;
+  if (activeMarker) { activeMarker.setMap(null); activeMarker = null; }
+  if (activeInfoWindow) { activeInfoWindow.close(); activeInfoWindow = null; }
+  if (gDirectionsRenderer) gDirectionsRenderer.setDirections({ routes: [] });
+  document.getElementById('route-info').innerHTML = '';
+  document.querySelectorAll('.spot-item').forEach(el => el.classList.remove('active'));
+  gmap.panTo(MAP_CENTER);
+  gmap.setZoom(13);
+}
+
+// ── Category chips ─────────────────────────────────────────────
+function renderMapCats() {
+  const cats = ['all','restaurants','bars','coffee','nightlife','sports','activity','culture','wellness','outdoor'];
+  const row = document.getElementById('map-cats');
+  row.innerHTML = cats.map(c =>
+    `<button class="map-cat-chip${c===activeMapCat?' active':''}" data-cat="${c}">${CAT_META[c].label}</button>`
+  ).join('');
+  row.addEventListener('click', e => {
+    const btn = e.target.closest('.map-cat-chip');
+    if (!btn) return;
+    activeMapCat = btn.dataset.cat;
+    document.querySelectorAll('.map-cat-chip').forEach(b => b.classList.toggle('active', b.dataset.cat === activeMapCat));
+    renderSpotsList();
+  });
+}
+
+// ── Spots List ─────────────────────────────────────────────────
+function renderSpotsList() {
+  const q = (document.getElementById('spot-search')?.value || '').toLowerCase().trim();
+  const filtered = PLACES.filter(p => {
+    const catOk = activeMapCat === 'all' || p.c === activeMapCat;
+    const txtOk = !q || p.n.toLowerCase().includes(q);
+    return catOk && txtOk;
+  });
+
+  const list = document.getElementById('spots-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div style="padding:10px 4px;font-size:12px;color:var(--t3)">No spots found.</div>';
+    return;
+  }
+
+  const countEl = `<div style="font-size:10px;color:var(--t3);padding:4px 4px 2px;letter-spacing:.05em;text-transform:uppercase">${filtered.length} place${filtered.length!==1?'s':''}</div>`;
+  list.innerHTML = countEl + filtered.map(p =>
+    `<div class="spot-item" data-name="${escAttr(p.n)}" data-cat="${p.c}">
+      <span class="spot-dot" style="background:${CAT_META[p.c]?.color||'#78909C'}"></span>
+      <span class="spot-name">${esc(p.n)}</span>
+    </div>`
+  ).join('');
+
+  list.addEventListener('click', e => {
+    const item = e.target.closest('.spot-item');
+    if (!item || !gmap) return;
+    document.querySelectorAll('.spot-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+    searchAndShowPlace(item.dataset.name);
+  }, { once: true });
+
+  // Re-add listener after each render
+  list.addEventListener('click', handleSpotClick);
+}
+
+function handleSpotClick(e) {
+  const item = e.target.closest('.spot-item');
+  if (!item || !gmap) return;
+  document.querySelectorAll('.spot-item').forEach(el => el.classList.remove('active'));
+  item.classList.add('active');
+  searchAndShowPlace(item.dataset.name);
+}
+
+// ── Search & Show Place ────────────────────────────────────────
+function searchAndShowPlace(name) {
+  if (!gPlacesSvc) return;
+
+  const routeEl = document.getElementById('route-info');
+  routeEl.innerHTML = `<div style="font-size:12px;color:var(--t2);padding:8px 0"><span class="spin">↻</span>&nbsp; Finding "${name}"…</div>`;
+
+  gPlacesSvc.textSearch({
+    query: name + ' Amsterdam',
+    location: new google.maps.LatLng(MAP_CENTER.lat, MAP_CENTER.lng),
+    radius: 25000,
+  }, (results, status) => {
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) {
+      routeEl.innerHTML = `<div style="font-size:12px;color:var(--warm);padding:6px 0">Could not locate "${name}" on the map.</div>`;
+      return;
+    }
+
+    const place = results[0];
+    const loc   = place.geometry.location;
+    const color = CAT_META[PLACES.find(p=>p.n===name)?.c]?.color || '#E07A5F';
+
+    // Clear previous
+    if (activeMarker)     { activeMarker.setMap(null); }
+    if (activeInfoWindow) { activeInfoWindow.close(); }
+    if (gDirectionsRenderer) gDirectionsRenderer.setDirections({ routes: [] });
+
+    // Place marker
+    activeMarker = new google.maps.Marker({
+      position: loc,
+      map: gmap,
+      title: name,
+      animation: google.maps.Animation.DROP,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: color,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+      },
+      zIndex: 20,
+    });
+
+    gmap.panTo(loc);
+    gmap.setZoom(15);
+
+    // InfoWindow
+    const lat = loc.lat(), lng = loc.lng();
+    activeInfoWindow = new google.maps.InfoWindow({
+      content: `<div style="font-family:'Outfit',sans-serif;min-width:160px;padding:4px 2px">
+        <div style="font-weight:600;font-size:13px;color:#111;margin-bottom:8px;line-height:1.3">${name.replace(/"/g,'&quot;')}</div>
+        <button onclick="showRoute({lat:${lat},lng:${lng}})"
+          style="width:100%;padding:7px 10px;background:#4EA8D2;color:#fff;border:none;border-radius:7px;
+                 cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;letter-spacing:.02em">
+          🚌 Route from home
+        </button>
+      </div>`,
+      maxWidth: 220,
+    });
+    activeInfoWindow.open(gmap, activeMarker);
+    activeMarker.addListener('click', () => activeInfoWindow.open(gmap, activeMarker));
+
+    // Info panel
+    const addr = place.formatted_address ? place.formatted_address.replace(/, Netherlands$/,'') : '';
+    routeEl.innerHTML = `
+      <div class="route-panel" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(name)}</div>
+          ${addr ? `<div style="font-size:11px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(addr)}</div>` : ''}
+        </div>
+        <button onclick="showRoute({lat:${lat},lng:${lng}})"
+          style="flex-shrink:0;padding:6px 12px;background:var(--accent-d);border:1px solid var(--accent);
+                 color:var(--accent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;
+                 font-family:inherit;white-space:nowrap">
+          🚌 Route
+        </button>
+      </div>`;
+  });
+}
+
+// ── Transit Route ─────────────────────────────────────────────
+function showRoute(dest) {
+  if (!gDirectionsSvc) return;
+
+  const routeEl = document.getElementById('route-info');
+  routeEl.innerHTML = `<div style="font-size:12px;color:var(--t2);padding:8px 0"><span class="spin">↻</span>&nbsp; Getting transit route…</div>`;
+
+  gDirectionsSvc.route({
+    origin: HOME_LATLNG,
+    destination: dest,
+    travelMode: google.maps.TravelMode.TRANSIT,
+    transitOptions: { departureTime: new Date(), modes: ['BUS','RAIL','SUBWAY','TRAM'] },
+  }, (result, status) => {
+    if (status !== 'OK') {
+      // Try walking as fallback
+      gDirectionsSvc.route({
+        origin: HOME_LATLNG, destination: dest,
+        travelMode: google.maps.TravelMode.WALKING,
+      }, (r2, s2) => {
+        if (s2 === 'OK') {
+          gDirectionsRenderer.setDirections(r2);
+          const leg = r2.routes[0].legs[0];
+          routeEl.innerHTML = `
+            <div class="route-panel">
+              <div style="font-size:11px;color:var(--t3);margin-bottom:6px">🚶 Walking route from Zeeburgereiland</div>
+              <div style="font-size:16px;font-weight:700;color:var(--t1)">${leg.duration.text}</div>
+              <div style="font-size:11px;color:var(--t2);margin-top:2px">${leg.distance.text}</div>
+            </div>`;
+        } else {
+          routeEl.innerHTML = `<div style="font-size:12px;color:var(--warm);padding:8px 0">No route found. Try <a href="https://9292.nl" target="_blank" style="color:var(--accent)">9292.nl ↗</a></div>`;
+        }
+      });
+      return;
+    }
+
+    gDirectionsRenderer.setDirections(result);
+    const leg = result.routes[0].legs[0];
+
+    // Build step summary
+    const transitSteps = leg.steps.filter(s => s.travel_mode === 'TRANSIT');
+    const stepsHtml = transitSteps.map(s => {
+      const t = s.transit;
+      const lineName = t.line?.short_name || t.line?.name || '?';
+      const depStop  = t.departure_stop?.name || '';
+      const arrStop  = t.arrival_stop?.name || '';
+      const numStops = t.num_stops || '';
+      return `<div class="route-step">
+        <span class="route-line-badge">${esc(lineName)}</span>
+        <span style="font-size:11px;color:var(--t2)">${esc(depStop)} → ${esc(arrStop)}${numStops ? ` (${numStops} stops)` : ''}</span>
+      </div>`;
+    }).join('');
+
+    routeEl.innerHTML = `
+      <div class="route-panel">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <div style="font-size:18px;font-weight:700;color:var(--t1)">${leg.duration.text}</div>
+          <div style="font-size:11px;color:var(--t2)">${leg.distance.text} · from Zeeburgereiland</div>
+        </div>
+        ${stepsHtml || '<div style="font-size:11px;color:var(--t3)">Direct connection</div>'}
+        <div style="font-size:10px;color:var(--t3);margin-top:8px">Departs now · <a href="https://9292.nl" target="_blank" style="color:var(--accent)">9292.nl ↗</a></div>
+      </div>`;
+  });
+}
 
 
 // ── Weather ────────────────────────────────────────────────────
@@ -600,7 +1271,7 @@ async function loadJobs() {
   document.getElementById('jobs-body').innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
   document.getElementById('jobs-count').textContent = '';
   const fetches = JOB_COMPANIES.filter(c => c.name !== 'All').map(c => {
-    if (!c.greenhouse) return Promise.resolve([]); // no live API
+    if (!c.greenhouse) return Promise.resolve([]);
     return fetchGreenhouse(c.greenhouse)
       .then(jobs => jobs.map(j => ({ ...j, company: c.name, companyUrl: c.url })));
   });
@@ -616,7 +1287,6 @@ function renderJobs() {
     return matchCo && matchQ;
   });
   document.getElementById('jobs-count').textContent = filtered.length ? `${filtered.length} Amsterdam role${filtered.length!==1?'s':''}` : '';
-  // Helper: company card for companies without live API
   function coCard(co) {
     const liUrl = co.liId
       ? `https://www.linkedin.com/jobs/search/?f_C=${co.liId}&location=Amsterdam%2C+Netherlands`
@@ -629,7 +1299,6 @@ function renderJobs() {
       </div>
     </div>`;
   }
-
   if (!filtered.length) {
     const co = activeCompany !== 'All' ? JOB_COMPANIES.find(c => c.name === activeCompany) : null;
     if (co && !co.greenhouse) {
@@ -650,8 +1319,6 @@ function renderJobs() {
         ${j.dept     ? `<span class="job-dept">${esc(j.dept)}</span>` : ''}
       </div>
     </div>`).join('');
-
-  // For "All" view, append cards for companies without live feed
   let cardsHtml = '';
   if (activeCompany === 'All') {
     const noFeed = JOB_COMPANIES.filter(c => c.name !== 'All' && !c.greenhouse);
@@ -674,13 +1341,10 @@ function renderJobChips() {
   });
 }
 
-
-// ── Amsterdam News (nu.nl/amsterdam → NOS fallback → AT5 fallback) ──────────
+// ── Amsterdam News ─────────────────────────────────────────────
 async function loadAT5() {
   const body = document.getElementById('at5-body');
   body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
-
-  // Helper: parse rss2json result into news items HTML
   function renderNewsItems(items, source) {
     return items.slice(0, 10).map(item => {
       const ago = item.pubDate ? timeAgo(new Date(item.pubDate)) : '';
@@ -690,42 +1354,33 @@ async function loadAT5() {
       </div>`;
     }).join('');
   }
-
   const FEEDS = [
     { url: 'https://www.at5.nl/nieuws/rss',         source: 'AT5' },
     { url: 'https://at5.nl/rss.xml',                source: 'AT5' },
     { url: 'https://www.nu.nl/rss/amsterdam',       source: 'nu.nl' },
     { url: 'https://feeds.nos.nl/nosnieuws',        source: 'NOS' },
   ];
-
   for (const feed of FEEDS) {
     try {
       const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
       const res = await fetch(apiUrl, { signal: AbortSignal.timeout(9000) });
       const data = await res.json();
-      if (data.status === 'ok' && data.items?.length) {
-        body.innerHTML = renderNewsItems(data.items, feed.source);
-        return;
-      }
+      if (data.status === 'ok' && data.items?.length) { body.innerHTML = renderNewsItems(data.items, feed.source); return; }
     } catch { /* try next */ }
   }
-
-  body.innerHTML = `
-    <div class="news-error">Could not load Amsterdam news.</div>
+  body.innerHTML = `<div class="news-error">Could not load Amsterdam news.</div>
     <a href="https://www.at5.nl/nieuws" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open AT5.nl ↗</a>`;
 }
 
-// ── World News (BBC → Reuters → Guardian fallback) ───────────────
+// ── World News ─────────────────────────────────────────────────
 async function loadHN() {
   const body = document.getElementById('hn-body');
   body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
-
   const FEEDS = [
-    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml',          source: 'BBC' },
-    { url: 'https://www.theguardian.com/world/rss',                 source: 'Guardian' },
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml',           source: 'BBC' },
+    { url: 'https://www.theguardian.com/world/rss',                  source: 'Guardian' },
     { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'NYT' },
   ];
-
   for (const feed of FEEDS) {
     try {
       const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
@@ -743,18 +1398,14 @@ async function loadHN() {
       }
     } catch { /* try next */ }
   }
-
-  body.innerHTML = `
-    <div class="news-error">Could not load world news.</div>
+  body.innerHTML = `<div class="news-error">Could not load world news.</div>
     <a href="https://www.bbc.com/news/world" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open BBC News ↗</a>`;
 }
 
-
-// ── Finance & Tech News ───────────────────────────────────────
+// ── Finance & Tech News ────────────────────────────────────────
 async function loadFT() {
   const body = document.getElementById('ft-body');
   body.innerHTML = '<div class="jobs-loading"><span class="spin">↻</span> Loading…</div>';
-
   const FEEDS = [
     { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html',  source: 'CNBC' },
     { url: 'https://feeds.bloomberg.com/markets/news.rss',            source: 'Bloomberg' },
@@ -762,7 +1413,6 @@ async function loadFT() {
     { url: 'https://feeds.marketwatch.com/marketwatch/topstories/',   source: 'MarketWatch' },
     { url: 'https://techcrunch.com/feed/',                            source: 'TechCrunch' },
   ];
-
   for (const feed of FEEDS) {
     try {
       const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
@@ -780,17 +1430,15 @@ async function loadFT() {
       }
     } catch { /* try next */ }
   }
-
-  body.innerHTML = `
-    <div class="news-error">Could not load finance news.</div>
+  body.innerHTML = `<div class="news-error">Could not load finance news.</div>
     <a href="https://www.cnbc.com" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:6px">Open CNBC ↗</a>`;
 }
 
 // ── Time helper ───────────────────────────────────────────────
 function timeAgo(date) {
   const secs = Math.floor((Date.now() - date) / 1000);
-  if (secs < 60)   return 'just now';
-  if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
+  if (secs < 60)    return 'just now';
+  if (secs < 3600)  return `${Math.floor(secs/60)}m ago`;
   if (secs < 86400) return `${Math.floor(secs/3600)}h ago`;
   return `${Math.floor(secs/86400)}d ago`;
 }
@@ -850,17 +1498,10 @@ function saveDash() {
 
 // ── Init ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Weather
   document.getElementById('btn-refresh-wx').addEventListener('click', loadWeather);
-
-  // Calendar
   document.getElementById('btn-cal-change').addEventListener('click', () => { state.calendarUrl = ''; saveState(); renderCalendar(); });
-
-  // Jobs
   document.getElementById('btn-refresh-jobs').addEventListener('click', loadJobs);
   document.getElementById('jobs-search').addEventListener('input', renderJobs);
-
-  // Settings
   document.getElementById('btn-settings').addEventListener('click', openSettings);
   document.getElementById('s-cancel').addEventListener('click', closeSettings);
   document.getElementById('modal-backdrop').addEventListener('click', e => { if (e.target===e.currentTarget) closeSettings(); });
@@ -869,16 +1510,11 @@ document.addEventListener('DOMContentLoaded', () => {
     state.city = document.getElementById('s-city').value.trim();
     saveState(); closeSettings(); updateClock(); loadWeather();
   });
-
-  // Save button
   document.getElementById('btn-save').addEventListener('click', saveDash);
-
-  // News refresh buttons
   document.getElementById('btn-refresh-at5').addEventListener('click', loadAT5);
   document.getElementById('btn-refresh-hn').addEventListener('click', loadHN);
   document.getElementById('btn-refresh-ft').addEventListener('click', loadFT);
 
-  // Initial loads
   renderCalendar();
   renderJobChips();
   loadWeather();
